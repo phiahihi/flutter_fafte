@@ -1,0 +1,110 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_device_type/flutter_device_type.dart';
+
+final scale = Device.get().isTablet ? 1.5 : 1.0;
+double keyboardHeightValue = 0.0;
+
+double deviceWidth(BuildContext context) => MediaQuery.of(context).size.width;
+double deviceHeight(BuildContext context) => MediaQuery.of(context).size.height;
+double keyboardHeight(BuildContext context) {
+  keyboardHeightValue = MediaQuery.of(context).viewInsets.bottom;
+  return keyboardHeightValue;
+}
+
+class Sizes {
+  Sizes._();
+
+  static double s1 = 1 * scale;
+  static double s2 = 2 * scale;
+  static double s3 = 3 * scale;
+  static double s4 = 4 * scale;
+  static double s5 = 5 * scale;
+  static double s6 = 6 * scale;
+  static double s7 = 7 * scale;
+  static double s8 = 8 * scale;
+  static double s9 = 9 * scale;
+  static double s10 = 10 * scale;
+  static double s11 = 11 * scale;
+  static double s12 = 12 * scale;
+  static double s13 = 13 * scale;
+  static double s14 = 14 * scale;
+  static double s15 = 15 * scale;
+  static double s16 = 16 * scale;
+  static double s17 = 17 * scale;
+  static double s18 = 18 * scale;
+  static double s20 = 20 * scale;
+  static double s22 = 22 * scale;
+  static double s23 = 23 * scale;
+  static double s24 = 24 * scale;
+  static double s25 = 25 * scale;
+  static double s26 = 26 * scale;
+  static double s27 = 27 * scale;
+  static double s28 = 28 * scale;
+  static double s30 = 30 * scale;
+  static double s32 = 32 * scale;
+  static double s33 = 33 * scale;
+  static double s35 = 35 * scale;
+  static double s36 = 36 * scale;
+  static double s38 = 38 * scale;
+  static double s40 = 40 * scale;
+  static double s42 = 42 * scale;
+  static double s44 = 44 * scale;
+  static double s45 = 45 * scale;
+  static double s48 = 48 * scale;
+  static double s50 = 50 * scale;
+  static double s52 = 52 * scale;
+
+  static double s53 = 53 * scale;
+  static double s56 = 56 * scale;
+  static double s58 = 58 * scale;
+  static double s60 = 60 * scale;
+  static double s62 = 62 * scale;
+  static double s64 = 64 * scale;
+  static double s65 = 65 * scale;
+  static double s70 = 70 * scale;
+  static double s72 = 72 * scale;
+  static double s75 = 75 * scale;
+  static double s76 = 76 * scale;
+  static double s80 = 80 * scale;
+  static double s82 = 82 * scale;
+  static double s85 = 85 * scale;
+  static double s90 = 90 * scale;
+  static double s92 = 92 * scale;
+  static double s100 = 100 * scale;
+  static double s109 = 109 * scale;
+  static double s110 = 110 * scale;
+
+  static double s120 = 120 * scale;
+  static double s125 = 125 * scale;
+  static double s130 = 130 * scale;
+  static double s135 = 135 * scale;
+  static double s138 = 138 * scale;
+  static double s140 = 140 * scale;
+  static double s145 = 145 * scale;
+  static double s148 = 148 * scale;
+  static double s150 = 150 * scale;
+  static double s152 = 152 * scale;
+  static double s160 = 160 * scale;
+  static double s170 = 170 * scale;
+  static double s175 = 175 * scale;
+  static double s176 = 176 * scale;
+  static double s180 = 180 * scale;
+  static double s188 = 188 * scale;
+  static double s200 = 200 * scale;
+  static double s206 = 206 * scale;
+  static double s212 = 212 * scale;
+  static double s222 = 222 * scale;
+  static double s224 = 224 * scale;
+  static double s240 = 240 * scale;
+  static double s245 = 245 * scale;
+  static double s250 = 250 * scale;
+  static double s254 = 254 * scale;
+  static double s256 = 256 * scale;
+  static double s260 = 260 * scale;
+  static double s270 = 270 * scale;
+  static double s280 = 280 * scale;
+  static double s286 = 286 * scale;
+  static double s290 = 290 * scale;
+  static double s300 = 300 * scale;
+  static double s350 = 350 * scale;
+}

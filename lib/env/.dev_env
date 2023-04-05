@@ -1,0 +1,7 @@
+API=https://betaapi.v-comply.com/
+NODE_API=https://beta-node.v-comply.com/
+PHOTO=https://s3-eu-west-1.amazonaws.com/eu.v-comply.com/profile_pic/thumb/
+ORG_LOGO=https://s3-eu-west-1.amazonaws.com/eu.v-comply.com/logo/thumb/
+ORGANIZATION_LOGO=https://s3-eu-west-1.amazonaws.com/eu.v-comply.com/logo/huge/
+ROOT_FILE=s3-eu-west-1.amazonaws.com/eu.v-comply.com
+ONE_SIGNAL_APP_ID=290293b8-793f-4b9b-b995-07d687f5308d
