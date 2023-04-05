@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fafte/base_response/base_response.dart';
 import 'package:fafte/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -9,6 +10,8 @@ class UserController extends ChangeNotifier {
   final firestore = FirebaseFirestore.instance;
   final auth = FirebaseAuth.instance;
   UserModel? userModel;
+  List<UserModel> listUserModel = [];
+  List<UserModel> listUserSearchModel = [];
 
   Future<UserModel> getSender(String chatId) async {
     DocumentSnapshot chat =
@@ -30,6 +33,29 @@ class UserController extends ChangeNotifier {
       print(error);
     }
   }
+
+  // Future<BaseResponse> getAllUser() async {
+  //   try {
+  //     final posts = await firestore.collection("users").get();
+  //     final postsFirebase = posts.docs.map((e) => e.data()).toList();
+  //     listUserModel = postsFirebase.map((e) => UserModel.fromJson(e)).toList();
+  //     listUserSearchModel = listUserModel
+  //         .where((s) => s.userName!
+  //             .toLowerCase()
+  //             .contains(searchString.text.toLowerCase()))
+  //         .toList();
+
+  //     return BaseResponse(
+  //       message: 'Success',
+  //       success: true,
+  //     );
+  //   } catch (error) {
+  //     return BaseResponse(
+  //       message: error.toString(),
+  //       success: false,
+  //     );
+  //   }
+  // }
 
   Future<void> createUser(String userID, UserModel userData) async {
     await firestore.collection('users').doc(userID).set(userData.toJson());
