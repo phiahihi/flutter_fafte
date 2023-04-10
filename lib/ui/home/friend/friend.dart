@@ -29,6 +29,7 @@ class _FriendScreenState extends State<FriendScreen> {
     }
   }
 
+
   void _rejectInvitation(String userId) async {
     _controller!.rejectInvitation(userId).then((response) async {
       if (response.success) {

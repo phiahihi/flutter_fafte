@@ -1,7 +1,16 @@
+import 'package:fafte/controller/chat_controller.dart';
+import 'package:fafte/controller/post_controller.dart';
+import 'package:fafte/models/item_message.dart';
+import 'package:fafte/models/message.dart';
+import 'package:fafte/models/user.dart';
+import 'package:fafte/ui/home/chat/widget/chat_screen_content.dart';
+import 'package:fafte/utils/date_time_utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fafte/theme/assets.dart';
 import 'package:fafte/ui/widget/container/spacing_box.dart';
 import 'package:fafte/utils/export.dart';
+import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -11,104 +20,147 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  ChatController? _chatController;
+  final _postController = PostController.instance;
+
+  bool isLoading = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_chatController == null) {
+      isLoading = false;
+      _chatController = Provider.of<ChatController>(context);
+      _chatController?.getAllBoxChat();
+    }
+    setState(() {
+      isLoading = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: white,
-      body: Stack(
+      body: SafeArea(
+          child: Column(
         children: [
-          Container(),
-          SafeArea(
-              child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                    vertical: Sizes.s8, horizontal: Sizes.s16),
-                child: Row(
+          _buildSearchUser(context),
+          Expanded(
+            child: Container(
+              color: whiteAccent,
+              child: SingleChildScrollView(
+                child: Column(
                   children: [
-                    GestureDetector(
-                      onTap: () {},
-                      child: SvgPicture.asset(Assets.search),
+                    SpacingBox(
+                      h: 15,
                     ),
                     SpacingBox(
-                      w: 4,
+                      h: 13,
                     ),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {},
-                        child: Container(
-                          height: Sizes.s40,
-                          padding: EdgeInsets.all(Sizes.s10),
-                          child: Text(
-                            S.current.search,
-                            style: pt16Regular(context),
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
+                    SizedBox(
+                      height: Sizes.s50,
+                      child: ListView(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        physics: BouncingScrollPhysics(),
+                        children: [
+                          _buildActive(),
+                          _buildActive(),
+                          _buildActive(),
+                          _buildActive(),
+                          _buildActive(),
+                          _buildActive(),
+                          _buildActive(),
+                        ],
                       ),
                     ),
                     SpacingBox(
-                      w: 4,
+                      h: 13,
                     ),
-                    GestureDetector(
-                        onTap: () {}, child: SvgPicture.asset(Assets.plus)),
+                    _buildListBoxChat(),
                   ],
                 ),
               ),
-              Expanded(
-                child: Container(
-                  color: whiteAccent,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        SpacingBox(
-                          h: 15,
-                        ),
-                        SpacingBox(
-                          h: 13,
-                        ),
-                        SizedBox(
-                          height: Sizes.s50,
-                          child: ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            physics: BouncingScrollPhysics(),
-                            children: [
-                              _buildActive(),
-                              _buildActive(),
-                              _buildActive(),
-                              _buildActive(),
-                              _buildActive(),
-                              _buildActive(),
-                              _buildActive(),
-                            ],
-                          ),
-                        ),
-                        SpacingBox(
-                          h: 13,
-                        ),
-                        _buildItemMessage(context),
-                        _buildItemMessage(context),
-                        _buildItemMessage(context),
-                        _buildItemMessage(context),
-                        _buildItemMessage(context),
-                        _buildItemMessage(context),
-                      ],
-                    ),
-                  ),
+            ),
+          )
+        ],
+      )),
+    );
+  }
+
+  Widget _buildListBoxChat() {
+    return ListView.separated(
+      separatorBuilder: (context, index) => SpacingBox(h: 8),
+      shrinkWrap: true,
+      physics: ScrollPhysics(),
+      itemBuilder: (context, index) {
+        List<String> parts = _chatController!.listBoxId[index].split("-");
+        String userId = parts[1] == FirebaseAuth.instance.currentUser!.uid
+            ? parts[0]
+            : parts[1];
+        return FutureBuilder<ItemMessageModel>(
+          future: _chatController!
+              .getItemMessage(_chatController!.listBoxId[index]),
+          builder: (context, snapshot) {
+            final itemMessageModel = snapshot.data;
+            return _buildItemMessage(
+              context,
+              itemMessageModel: itemMessageModel,
+              friend: itemMessageModel?.userModel ?? UserModel(),
+            );
+          },
+        );
+      },
+      itemCount: _chatController?.listBoxId.length ?? 0,
+    );
+  }
+
+  Widget _buildSearchUser(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: Sizes.s8, horizontal: Sizes.s16),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () {},
+            child: SvgPicture.asset(Assets.search),
+          ),
+          SpacingBox(
+            w: 4,
+          ),
+          Expanded(
+            child: InkWell(
+              onTap: () {},
+              child: Container(
+                height: Sizes.s40,
+                padding: EdgeInsets.all(Sizes.s10),
+                child: Text(
+                  S.current.search,
+                  style: pt16Regular(context),
+                  textAlign: TextAlign.left,
                 ),
-              )
-            ],
-          ))
+              ),
+            ),
+          ),
+          SpacingBox(
+            w: 4,
+          ),
+          GestureDetector(onTap: () {}, child: SvgPicture.asset(Assets.plus)),
         ],
       ),
     );
   }
 
-  Widget _buildItemMessage(BuildContext context) {
+  Widget _buildItemMessage(
+    BuildContext context, {
+    ItemMessageModel? itemMessageModel,
+    required UserModel friend,
+  }) {
     return InkWell(
       onTap: () {
-        // navigateTo(MessageScreen());
+        navigateTo(ChatScreenContent(
+          friend: friend,
+        ));
       },
       child: Container(
         padding:
@@ -117,14 +169,24 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Row(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(Sizes.s50),
-                  child: Image.asset(
-                    Assets.logo,
-                    width: Sizes.s50,
-                    height: Sizes.s50,
+                if (itemMessageModel?.userModel?.profileImageUrl == null)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(Sizes.s50),
+                    child: Image.asset(
+                      Assets.logo,
+                      width: Sizes.s50,
+                      height: Sizes.s50,
+                    ),
+                  )
+                else
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(Sizes.s50),
+                    child: Image.network(
+                      itemMessageModel?.userModel?.profileImageUrl ?? '',
+                      width: Sizes.s50,
+                      height: Sizes.s50,
+                    ),
                   ),
-                ),
                 SpacingBox(
                   w: 15,
                 ),
@@ -132,29 +194,55 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Darien Don',
-                            style: pt14Bold(context).copyWith(
-                                fontSize: Sizes.s13, color: textColor2),
-                          ),
-                          Text(
-                            '15:28 PM',
-                            style:
-                                pt12Regular(context).copyWith(color: textColor),
-                          )
-                        ],
-                      ),
+                      if (itemMessageModel == null)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Darien Don',
+                              style: pt14Bold(context).copyWith(
+                                  fontSize: Sizes.s13, color: textColor2),
+                            ),
+                            Text(
+                              '15:28 PM',
+                              style: pt12Regular(context)
+                                  .copyWith(color: textColor),
+                            )
+                          ],
+                        )
+                      else
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              itemMessageModel.userModel!.userName!,
+                              style: pt14Bold(context).copyWith(
+                                  fontSize: Sizes.s13, color: textColor2),
+                            ),
+                            Text(
+                              timestampToDate(
+                                      itemMessageModel.messageModel!.timestamp)
+                                  .timeAgoEnShort(),
+                              style: pt12Regular(context)
+                                  .copyWith(color: textColor),
+                            )
+                          ],
+                        ),
                       SpacingBox(
                         h: 5,
                       ),
-                      Text(
-                        'Great! Do you Love it.',
-                        style:
-                            pt14Regular(context).copyWith(fontSize: Sizes.s13),
-                      ),
+                      if (itemMessageModel == null)
+                        Text(
+                          'Great! Do you Love it.',
+                          style: pt14Regular(context)
+                              .copyWith(fontSize: Sizes.s13),
+                        )
+                      else
+                        Text(
+                          itemMessageModel.messageModel!.messageText!,
+                          style: pt14Regular(context)
+                              .copyWith(fontSize: Sizes.s13),
+                        ),
                     ],
                   ),
                 )

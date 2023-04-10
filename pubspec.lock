@@ -177,6 +177,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  dash_chat_2:
+    dependency: "direct main"
+    description:
+      name: dash_chat_2
+      sha256: "7ffdeb023fb2c9e194e2147ef8e967d36e4481493178051ceb36d98c62396ddd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.15"
   device_info_plus:
     dependency: "direct main"
     description:
@@ -379,6 +387,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.16"
+  flutter_parsed_text:
+    dependency: transitive
+    description:
+      name: flutter_parsed_text
+      sha256: "529cf5793b7acdf16ee0f97b158d0d4ba0bf06e7121ef180abe1a5b59e32c1e2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.1"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -1131,5 +1147,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.18.2 <3.0.0"
+  dart: ">=2.18.2 <4.0.0"
   flutter: ">=3.3.0"

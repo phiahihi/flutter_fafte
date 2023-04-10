@@ -133,6 +133,8 @@ class _CommentScreenState extends State<CommentScreen> {
                                   timestamp:
                                       DateTime.now().millisecondsSinceEpoch,
                                 ));
+                                _commentController.clear();
+
                                 controller!
                                     .commentPost(widget.postId)
                                     .then((response) {
@@ -142,19 +144,12 @@ class _CommentScreenState extends State<CommentScreen> {
                                       isLoading = false;
                                     });
                                     controller?.getAllCommentPost();
-                                    _commentController.clear();
                                   } else {
-                                    print(response.message);
-                                    _commentController.clear();
-
                                     setState(() {
                                       isLoading = false;
                                     });
                                   }
                                 }).catchError((error) {
-                                  print(error);
-                                  _commentController.clear();
-
                                   setState(() {
                                     isLoading = false;
                                   });

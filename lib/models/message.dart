@@ -1,38 +1,38 @@
-import 'package:fafte/models/chat_media.dart';
+import 'dart:convert';
 
 class MessageModel {
   String? id;
-  String? text;
   String? senderId;
+  String? receiverId;
+  String? messageText;
   int? timestamp;
-  List<ChatMedia>? medias;
+  bool? isRead;
 
   MessageModel(
-      {this.id, this.text, this.senderId, this.timestamp, this.medias});
+      {this.id,
+      this.senderId,
+      this.receiverId,
+      this.messageText,
+      this.timestamp,
+      this.isRead});
 
-  factory MessageModel.fromJson(Map<dynamic, dynamic> json) {
+  factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
       id: json['id'],
-      text: json['text'],
       senderId: json['senderId'],
+      receiverId: json['receiverId'],
+      messageText: json['messageText'],
       timestamp: json['timestamp'],
-      medias: json['medias'] != null
-          ? (json['medias'] as List<dynamic>)
-              .map((dynamic media) =>
-                  ChatMedia.fromJson(media as Map<String, dynamic>))
-              .toList()
-          : <ChatMedia>[],
+      isRead: json['isRead'],
     );
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id ?? '';
-    data['timestamp'] = this.timestamp ?? '';
-    data['senderId'] = this.senderId ?? '';
-    data['text'] = this.text ?? '';
-    data['medias'] = this.medias ?? [];
-
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'senderId': senderId,
+        'receiverId': receiverId,
+        'messageText': messageText,
+        'timestamp': timestamp,
+        'isRead': isRead,
+      };
 }

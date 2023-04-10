@@ -10,7 +10,7 @@ class UserController extends ChangeNotifier {
   final firestore = FirebaseFirestore.instance;
   final auth = FirebaseAuth.instance;
   UserModel? userModel;
-  List<UserModel> listUserModel = [];
+  List<UserModel> listUserStorageModel = [];
   List<UserModel> listUserSearchModel = [];
 
   Future<UserModel> getSender(String chatId) async {

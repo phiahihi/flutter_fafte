@@ -9,7 +9,6 @@ import 'package:fafte/ui/home/personal/personal.dart';
 import 'package:fafte/ui/home/post/widget/comment_screen.dart';
 import 'package:fafte/ui/widget/container/spacing_box.dart';
 import 'package:fafte/ui/widget/skeleton/post_screen_skeleton.dart';
-import 'package:fafte/ui/widget/textfield/textfield.dart';
 import 'package:fafte/utils/date_time_utils.dart';
 import 'package:fafte/utils/export.dart';
 import 'package:provider/provider.dart';
@@ -17,11 +16,8 @@ import 'widget/item_post_button.dart';
 import 'package:fafte/utils/snackbars_utils.dart';
 
 class PostScreen extends StatefulWidget {
-  final ScrollController controller;
-
   const PostScreen({
     super.key,
-    required this.controller,
   });
   @override
   State<PostScreen> createState() => _PostScreenState();
@@ -132,7 +128,6 @@ class _PostScreenState extends State<PostScreen> {
                       return true;
                     },
                     child: ListView(
-                      controller: widget.controller,
                       children: [
                         ItemPostButton(),
                         SpacingBox(h: 8),
@@ -242,9 +237,7 @@ class _PostScreenState extends State<PostScreen> {
             ),
             trailing: Icon(Icons.more_vert),
             onTap: () {
-              navigateTo(PersonalScreen(
-                model: userModel,
-              ));
+              navigateTo(PersonalScreen(model: userModel));
             },
           ),
           if (model.postImageUrl != '')
@@ -258,18 +251,24 @@ class _PostScreenState extends State<PostScreen> {
               ),
             ),
           Padding(
-            padding: EdgeInsets.all(Sizes.s16),
+            padding: EdgeInsets.symmetric(vertical: Sizes.s16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  model.postText!,
-                  style: pt14Regular(context)
-                      .copyWith(overflow: TextOverflow.ellipsis),
-                  maxLines: 3,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
+                  child: Text(
+                    model.postText!,
+                    style: pt14Regular(context)
+                        .copyWith(overflow: TextOverflow.ellipsis),
+                    maxLines: 3,
+                  ),
                 ),
                 SizedBox(height: Sizes.s16),
-                Divider(),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
+                  child: Divider(height: Sizes.s1),
+                ),
                 Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -290,7 +289,8 @@ class _PostScreenState extends State<PostScreen> {
                             ),
                           ),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: Sizes.s8),
+                        padding: EdgeInsets.symmetric(
+                            vertical: Sizes.s12, horizontal: Sizes.s16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -316,6 +316,10 @@ class _PostScreenState extends State<PostScreen> {
                           ],
                         ),
                       )),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
+                  child: Divider(height: Sizes.s1),
                 ),
                 SizedBox(
                   height: Sizes.s56,

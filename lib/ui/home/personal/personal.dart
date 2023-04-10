@@ -5,6 +5,8 @@ import 'package:fafte/controller/user_controller.dart';
 import 'package:fafte/models/post.dart';
 import 'package:fafte/models/user.dart';
 import 'package:fafte/theme/assets.dart';
+import 'package:fafte/ui/home/chat/chat.dart';
+import 'package:fafte/ui/home/chat/widget/chat_screen_content.dart';
 import 'package:fafte/ui/home/post/widget/item_post_button.dart';
 import 'package:fafte/ui/widget/button/back_button.dart';
 import 'package:fafte/ui/widget/button/text_button.dart';
@@ -31,6 +33,8 @@ class _PersonalScreenState extends State<PersonalScreen> {
   UserController userModel = UserController.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
   String? _status;
+  String? _receiverId;
+  String? _inviteId;
 
   @override
   void didChangeDependencies() {
@@ -91,6 +95,22 @@ class _PersonalScreenState extends State<PersonalScreen> {
     });
   }
 
+  _acceptInvitation() {
+    _friendController.acceptInvitation(_inviteId ?? '').then((response) {
+      if (response.success) {
+        setState(() {
+          isInvited = false;
+          _status = 'accepted';
+        });
+        ContextExtensions(context).showSnackBar(response.message);
+      } else {
+        ContextExtensions(context).showSnackBar(response.message);
+      }
+    }).catchError((error) {
+      ContextExtensions(context).showSnackBar(error);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -99,6 +119,8 @@ class _PersonalScreenState extends State<PersonalScreen> {
         .then((value) {
       setState(() {
         _status = value.status;
+        _receiverId = value.receiverId;
+        _inviteId = value.id;
       });
     });
   }
@@ -135,37 +157,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
                               children: [
                                 _buildInfo(context),
                                 if (auth.currentUser!.uid != widget.model!.id)
-                                  Container(
-                                    color: white,
-                                    child: Column(
-                                      children: [
-                                        isInvited || _status == 'pending'
-                                            ? BuildTextLinearButton(
-                                                onTap: _rejectInvitation,
-                                                text: 'Hủy lời mời kết bạn',
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        Sizes.s8),
-                                                height: Sizes.s40,
-                                              )
-                                            : BuildTextLinearButton(
-                                                onTap: _sendInvitation,
-                                                colors: [
-                                                  blueLightGradient,
-                                                  blueDarkGradient
-                                                ],
-                                                text: 'Thêm bạn bè',
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        Sizes.s8),
-                                                height: Sizes.s40,
-                                              ),
-                                        SpacingBox(
-                                          h: 16,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  _buildButtonInvite(),
                                 SpacingBox(h: 4),
                                 if (auth.currentUser!.uid == widget.model!.id)
                                   Column(
@@ -184,6 +176,84 @@ class _PersonalScreenState extends State<PersonalScreen> {
               ),
             )
           : PostScreenSkeleton(),
+    );
+  }
+
+  Widget _buildButtonInvite() {
+    return Container(
+      color: white,
+      child: Column(
+        children: [
+          isInvited ||
+                  _status == 'pending' && _receiverId == auth.currentUser!.uid
+              ? Row(
+                  children: [
+                    Expanded(
+                      child: BuildTextLinearButton(
+                        onTap: _acceptInvitation,
+                        text: 'Chấp nhận',
+                        borderRadius: BorderRadius.circular(Sizes.s8),
+                        height: Sizes.s40,
+                        colors: [blueLightGradient, blueDarkGradient],
+                      ),
+                    ),
+                    Expanded(
+                      child: BuildTextLinearButton(
+                        onTap: _rejectInvitation,
+                        text: 'Từ chối',
+                        borderRadius: BorderRadius.circular(Sizes.s8),
+                        height: Sizes.s40,
+                      ),
+                    ),
+                  ],
+                )
+              : isInvited || _status == 'pending'
+                  ? BuildTextLinearButton(
+                      onTap: _rejectInvitation,
+                      text: 'Hủy lời mời kết bạn',
+                      borderRadius: BorderRadius.circular(Sizes.s8),
+                      height: Sizes.s40,
+                    )
+                  : _status == 'accepted'
+                      ? Row(
+                          children: [
+                            Expanded(
+                              child: BuildTextLinearButton(
+                                onTap: () {},
+                                colors: [blueLightGradient, blueDarkGradient],
+                                text: 'Bạn bè',
+                                borderRadius: BorderRadius.circular(Sizes.s8),
+                                height: Sizes.s40,
+                              ),
+                            ),
+                            Expanded(
+                              child: BuildTextLinearButton(
+                                onTap: () {
+                                  navigateTo(ChatScreenContent(
+                                    friend:
+                                        widget.model ?? userModel.userModel!,
+                                  ));
+                                },
+                                colors: [blueLightGradient, blueDarkGradient],
+                                text: 'Nhắn tin',
+                                borderRadius: BorderRadius.circular(Sizes.s8),
+                                height: Sizes.s40,
+                              ),
+                            ),
+                          ],
+                        )
+                      : BuildTextLinearButton(
+                          onTap: _sendInvitation,
+                          colors: [blueLightGradient, blueDarkGradient],
+                          text: 'Thêm bạn bè',
+                          borderRadius: BorderRadius.circular(Sizes.s8),
+                          height: Sizes.s40,
+                        ),
+          SpacingBox(
+            h: 16,
+          ),
+        ],
+      ),
     );
   }
 
