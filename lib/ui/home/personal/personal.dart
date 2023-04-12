@@ -5,7 +5,6 @@ import 'package:fafte/controller/user_controller.dart';
 import 'package:fafte/models/post.dart';
 import 'package:fafte/models/user.dart';
 import 'package:fafte/theme/assets.dart';
-import 'package:fafte/ui/home/chat/chat.dart';
 import 'package:fafte/ui/home/chat/widget/chat_screen_content.dart';
 import 'package:fafte/ui/home/post/widget/item_post_button.dart';
 import 'package:fafte/ui/widget/button/back_button.dart';

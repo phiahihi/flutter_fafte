@@ -4,6 +4,7 @@ import 'package:fafte/ui/authenticate/welcome_v2_login/welcome_v2_login.dart';
 import 'package:fafte/ui/widget/button/text_button.dart';
 import 'package:fafte/ui/widget/container/spacing_box.dart';
 import 'package:fafte/utils/export.dart';
+import 'package:flutter/services.dart';
 
 class WelcomeLoginScreen extends StatefulWidget {
   const WelcomeLoginScreen({super.key});
@@ -13,6 +14,26 @@ class WelcomeLoginScreen extends StatefulWidget {
 }
 
 class _WelcomeLoginScreenState extends State<WelcomeLoginScreen> {
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+// Step 3
+  @override
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

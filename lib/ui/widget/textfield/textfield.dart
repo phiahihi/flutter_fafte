@@ -17,26 +17,27 @@ class BuildTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final bool obscureText;
   final BorderSide? borderSide;
+  final FocusNode? focusNode;
 
-  const BuildTextField({
-    super.key,
-    this.controller,
-    this.prefixIcon,
-    this.suffixIcon,
-    this.hintText,
-    this.hintStyle,
-    this.contentPadding,
-    this.fillColor,
-    this.maxLines,
-    this.borderRadius,
-    this.onFieldSubmitted,
-    this.onChanged,
-    this.onTap,
-    this.readOnly = false,
-    this.obscureText = false,
-    this.validator,
-    this.borderSide,
-  });
+  const BuildTextField(
+      {super.key,
+      this.controller,
+      this.prefixIcon,
+      this.suffixIcon,
+      this.hintText,
+      this.hintStyle,
+      this.contentPadding,
+      this.fillColor,
+      this.maxLines,
+      this.borderRadius,
+      this.onFieldSubmitted,
+      this.onChanged,
+      this.onTap,
+      this.readOnly = false,
+      this.obscureText = false,
+      this.validator,
+      this.borderSide,
+      this.focusNode});
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +51,7 @@ class BuildTextField extends StatelessWidget {
       controller: controller,
       maxLines: maxLines,
       minLines: 1,
+      focusNode: focusNode,
       style: pt16Regular(context),
       decoration: InputDecoration(
         hintText: hintText,

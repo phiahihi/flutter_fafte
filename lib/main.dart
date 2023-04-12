@@ -93,7 +93,7 @@ void main() async {
   }
   FirebaseDatabase.instance.setPersistenceEnabled(true);
   await setUp();
-  runApp(MealPlanner());
+  runApp(FafteFlutter());
 }
 
 Future<void> setUp() async {

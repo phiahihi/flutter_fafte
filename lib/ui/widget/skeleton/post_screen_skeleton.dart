@@ -59,60 +59,60 @@ class PostScreenSkeleton extends StatelessWidget {
             SpacingBox(
               h: 11,
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                height: Sizes.s150,
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: Sizes.s20),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(Sizes.s10),
-                        child: Container(
-                          color: white,
-                          width: Sizes.s100,
-                          height: Sizes.s148,
-                        ),
-                      ),
-                    ),
-                    SpacingBox(
-                      w: 8,
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(Sizes.s10),
-                      child: Container(
-                        color: white,
-                        width: Sizes.s100,
-                        height: Sizes.s148,
-                      ),
-                    ),
-                    SpacingBox(
-                      w: 8,
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(Sizes.s10),
-                      child: Container(
-                        color: white,
-                        width: Sizes.s100,
-                        height: Sizes.s148,
-                      ),
-                    ),
-                    SpacingBox(
-                      w: 8,
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(Sizes.s10),
-                      child: Container(
-                        color: white,
-                        width: Sizes.s100,
-                        height: Sizes.s148,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            // SingleChildScrollView(
+            //   scrollDirection: Axis.horizontal,
+            //   child: Container(
+            //     height: Sizes.s150,
+            //     child: Row(
+            //       children: [
+            //         Padding(
+            //           padding: EdgeInsets.only(left: Sizes.s20),
+            //           child: ClipRRect(
+            //             borderRadius: BorderRadius.circular(Sizes.s10),
+            //             child: Container(
+            //               color: white,
+            //               width: Sizes.s100,
+            //               height: Sizes.s148,
+            //             ),
+            //           ),
+            //         ),
+            //         SpacingBox(
+            //           w: 8,
+            //         ),
+            //         ClipRRect(
+            //           borderRadius: BorderRadius.circular(Sizes.s10),
+            //           child: Container(
+            //             color: white,
+            //             width: Sizes.s100,
+            //             height: Sizes.s148,
+            //           ),
+            //         ),
+            //         SpacingBox(
+            //           w: 8,
+            //         ),
+            //         ClipRRect(
+            //           borderRadius: BorderRadius.circular(Sizes.s10),
+            //           child: Container(
+            //             color: white,
+            //             width: Sizes.s100,
+            //             height: Sizes.s148,
+            //           ),
+            //         ),
+            //         SpacingBox(
+            //           w: 8,
+            //         ),
+            //         ClipRRect(
+            //           borderRadius: BorderRadius.circular(Sizes.s10),
+            //           child: Container(
+            //             color: white,
+            //             width: Sizes.s100,
+            //             height: Sizes.s148,
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
             SpacingBox(
               h: 16,
             ),

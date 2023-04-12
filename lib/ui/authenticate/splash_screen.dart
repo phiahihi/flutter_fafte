@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           final firstOpen = await checkFirstOpen();
           if (firstOpen) {
-            navigateTo(const OnboardingScreen());
+            navigateTo(const OnboardingScreen(), clearStack: true);
             prefs.setBool("first_open", false);
           } else {
             AuthController.instance.checkUserSignIn();

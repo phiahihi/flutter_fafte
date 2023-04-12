@@ -2,7 +2,6 @@ import 'package:fafte/controller/notification_controller.dart';
 import 'package:fafte/models/notification.dart';
 import 'package:fafte/utils/export.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});

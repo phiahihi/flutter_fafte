@@ -3,6 +3,7 @@ import 'package:fafte/ui/authenticate/welcome_login/welcome_login.dart';
 import 'package:fafte/ui/widget/button/text_button.dart';
 import 'package:fafte/ui/widget/container/spacing_box.dart';
 import 'package:fafte/utils/export.dart';
+import 'package:flutter/services.dart';
 
 final List<Map<String, String>> splashData = [
   {
@@ -37,9 +38,24 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   int _currentPage = 0;
   List<Map<String, String>> _getSplashData() => splashData;
 
-  @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+// Step 3
+  @override
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
   }
 
   @override

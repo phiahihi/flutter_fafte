@@ -60,25 +60,23 @@ class ChatController extends ChangeNotifier {
       if (event.snapshot.value != null) {
         var map = event.snapshot.children;
 
-        if (map != null) {
-          final s = map.map((e) {
-            return MessageModel.fromJson(jsonDecode(jsonEncode(e.value)));
-          }).toList();
-          s.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
+        final s = map.map((e) {
+          return MessageModel.fromJson(jsonDecode(jsonEncode(e.value)));
+        }).toList();
+        s.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
 
-          messages = s.map((e) {
-            getAvatarUrl(receiverId).then((value) {
-              userSendMessage = value;
-            });
-            return ChatMessage(
-                user: ChatUser(
-                  id: e.senderId!,
-                  profileImage: userSendMessage,
-                ),
-                createdAt: DateTime.fromMillisecondsSinceEpoch(e.timestamp!),
-                text: e.messageText!);
-          }).toList();
-        }
+        messages = s.map((e) {
+          getAvatarUrl(receiverId).then((value) {
+            userSendMessage = value;
+          });
+          return ChatMessage(
+              user: ChatUser(
+                id: e.senderId!,
+                profileImage: userSendMessage,
+              ),
+              createdAt: DateTime.fromMillisecondsSinceEpoch(e.timestamp!),
+              text: e.messageText!);
+        }).toList();
       }
 
       notifyListeners();

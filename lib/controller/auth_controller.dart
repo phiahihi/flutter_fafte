@@ -161,7 +161,7 @@ class AuthController extends ChangeNotifier {
     if (currentUser != null) {
       navigateTo(const MainScreen(), clearStack: true);
     } else {
-      navigateTo(const WelcomeLoginScreen());
+      navigateTo(const WelcomeLoginScreen(), clearStack: true);
     }
   }
 

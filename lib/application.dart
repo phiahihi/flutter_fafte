@@ -20,14 +20,14 @@ import 'package:fafte/theme/app_theme.dart';
 import 'package:fafte/ui/authenticate/splash_screen.dart';
 import 'package:provider/provider.dart';
 
-class MealPlanner extends StatefulWidget {
-  const MealPlanner({super.key});
+class FafteFlutter extends StatefulWidget {
+  const FafteFlutter({super.key});
 
   @override
-  State<MealPlanner> createState() => _MealPlannerState();
+  State<FafteFlutter> createState() => _FafteFlutterState();
 }
 
-class _MealPlannerState extends State<MealPlanner> {
+class _FafteFlutterState extends State<FafteFlutter> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   @override

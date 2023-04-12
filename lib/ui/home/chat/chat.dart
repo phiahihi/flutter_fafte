@@ -1,7 +1,5 @@
 import 'package:fafte/controller/chat_controller.dart';
-import 'package:fafte/controller/post_controller.dart';
 import 'package:fafte/models/item_message.dart';
-import 'package:fafte/models/message.dart';
 import 'package:fafte/models/user.dart';
 import 'package:fafte/ui/home/chat/widget/chat_screen_content.dart';
 import 'package:fafte/utils/date_time_utils.dart';
@@ -21,7 +19,6 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   ChatController? _chatController;
-  final _postController = PostController.instance;
 
   bool isLoading = false;
 
@@ -95,10 +92,6 @@ class _ChatScreenState extends State<ChatScreen> {
       shrinkWrap: true,
       physics: ScrollPhysics(),
       itemBuilder: (context, index) {
-        List<String> parts = _chatController!.listBoxId[index].split("-");
-        String userId = parts[1] == FirebaseAuth.instance.currentUser!.uid
-            ? parts[0]
-            : parts[1];
         return FutureBuilder<ItemMessageModel>(
           future: _chatController!
               .getItemMessage(_chatController!.listBoxId[index]),

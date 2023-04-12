@@ -35,6 +35,8 @@ class PostController extends ChangeNotifier {
   List<UserModel> listUserModel = [];
   List<PostModel> listPostByIdModel = [];
   List<CommentModel> listCommentPost = [];
+  List<CommentModel> listCommentPostById = [];
+
   List<LikeModel> listLikePost = [];
 
   clear() {
@@ -278,9 +280,9 @@ class PostController extends ChangeNotifier {
           .get();
 
       final postsFirebase = posts.docs.map((e) => e.data()).toList();
-      listCommentPost =
+      listCommentPostById =
           postsFirebase.map((e) => CommentModel.fromJson(e)).toList();
-      listCommentPost.sort((a, b) => a.timestamp!.compareTo(b.timestamp!));
+      listCommentPostById.sort((a, b) => a.timestamp!.compareTo(b.timestamp!));
       notifyListeners();
       return BaseResponse(
         message: 'Success',

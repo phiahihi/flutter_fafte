@@ -24,11 +24,6 @@ class _CommentScreenState extends State<CommentScreen> {
   String comment = '';
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (controller == null) {
@@ -162,7 +157,9 @@ class _CommentScreenState extends State<CommentScreen> {
                                 padding: EdgeInsets.all(Sizes.s8),
                                 child: Icon(
                                   Icons.send,
-                                  color: comment != '' && !isLoading
+                                  color: comment != '' &&
+                                          !isLoading &&
+                                          comment.length > 0
                                       ? splashColor
                                       : textColor,
                                 ),

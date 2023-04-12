@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:fafte/controller/notification_controller.dart';
 import 'package:fafte/controller/post_controller.dart';
+import 'package:fafte/models/comment.dart';
 import 'package:fafte/models/like.dart';
 import 'package:fafte/models/post.dart';
 import 'package:fafte/models/user.dart';
 import 'package:fafte/theme/assets.dart';
 import 'package:fafte/ui/home/personal/personal.dart';
 import 'package:fafte/ui/home/post/widget/comment_screen.dart';
+import 'package:fafte/ui/home/post/widget/detail_post_screen.dart';
 import 'package:fafte/ui/widget/container/spacing_box.dart';
 import 'package:fafte/ui/widget/skeleton/post_screen_skeleton.dart';
 import 'package:fafte/utils/date_time_utils.dart';
@@ -89,6 +91,12 @@ class _PostScreenState extends State<PostScreen> {
 
   List<LikeModel>? getUserLikedPost(String postId) {
     return _controller!.listLikePost
+        .where((element) => element.postId == postId)
+        .toList();
+  }
+
+  List<CommentModel>? getUserCommentPost(String postId) {
+    return _controller!.listCommentPost
         .where((element) => element.postId == postId)
         .toList();
   }
@@ -214,9 +222,7 @@ class _PostScreenState extends State<PostScreen> {
       (element) => element.userId == _controller?.auth.currentUser?.uid,
       orElse: () => LikeModel(),
     );
-    final listCommentPost = _controller?.listCommentPost
-        .where((element) => element.postId == model.id)
-        .toList();
+    final listComment = getUserCommentPost(model.id!);
 
     return Container(
       color: white,
@@ -244,7 +250,12 @@ class _PostScreenState extends State<PostScreen> {
             ),
             trailing: Icon(Icons.more_vert),
             onTap: () {
-              navigateTo(PersonalScreen(model: userModel));
+              navigateTo(
+                DetailPostScreen(
+                  model: model,
+                  userModel: userModel,
+                ),
+              );
             },
           ),
           if (model.postImageUrl != '')
@@ -287,7 +298,7 @@ class _PostScreenState extends State<PostScreen> {
                             backgroundColor: Colors.transparent,
                             builder: (context) => CommentScreen(
                               postId: model.id ?? '',
-                              listComment: listCommentPost ?? [],
+                              listComment: listComment ?? [],
                             ),
                           ),
                       child: Padding(
@@ -311,7 +322,7 @@ class _PostScreenState extends State<PostScreen> {
                               ],
                             ),
                             Text(
-                              (listCommentPost?.length.toString() ?? '0') +
+                              (listComment?.length.toString() ?? '0') +
                                   ' bình luận',
                               style: pt14Regular(context),
                             ),
@@ -382,7 +393,7 @@ class _PostScreenState extends State<PostScreen> {
                             backgroundColor: Colors.transparent,
                             builder: (context) => CommentScreen(
                               postId: model.id ?? '',
-                              listComment: listCommentPost ?? [],
+                              listComment: listComment ?? [],
                             ),
                           ),
                           child: Row(
