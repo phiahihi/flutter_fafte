@@ -53,13 +53,11 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
                     controller!.setUserNotTyping(widget.friend.id!);
                   });
                 },
-                // messageOptions: MessageOptions(
-                //   containerColor: splashColor,
-                //   currentUserContainerColor: splashColor,
-                //   textColor: white,
-
-                // ),
-
+                messageOptions: MessageOptions(
+                  containerColor: splashColor,
+                  currentUserContainerColor: splashColor,
+                  textColor: white,
+                ),
                 inputOptions: InputOptions(
                   onTextChange: (String text) {
                     if (text.isEmpty) {

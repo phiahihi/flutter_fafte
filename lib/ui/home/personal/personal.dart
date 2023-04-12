@@ -49,7 +49,6 @@ class _PersonalScreenState extends State<PersonalScreen> {
     setState(() {
       isLoading = true;
     });
-    print(_controller!.listPostByIdModel);
   }
 
   _sendInvitation() {

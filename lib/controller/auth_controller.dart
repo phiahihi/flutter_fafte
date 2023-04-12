@@ -6,7 +6,6 @@ import 'package:fafte/controller/user_controller.dart';
 import 'package:fafte/models/user.dart';
 import 'package:fafte/ui/authenticate/welcome_login/welcome_login.dart';
 import 'package:fafte/ui/home/main_screen/main_screen.dart';
-import 'package:fafte/ui/home/message/message.dart';
 import 'package:fafte/utils/export.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';

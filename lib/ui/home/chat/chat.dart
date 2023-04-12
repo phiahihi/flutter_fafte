@@ -231,18 +231,39 @@ class _ChatScreenState extends State<ChatScreen> {
                       SpacingBox(
                         h: 5,
                       ),
-                      if (itemMessageModel == null)
-                        Text(
-                          'Great! Do you Love it.',
-                          style: pt14Regular(context)
-                              .copyWith(fontSize: Sizes.s13),
-                        )
-                      else
-                        Text(
-                          itemMessageModel.messageModel!.messageText!,
-                          style: pt14Regular(context)
-                              .copyWith(fontSize: Sizes.s13),
-                        ),
+                      Row(
+                        children: [
+                          if (itemMessageModel == null)
+                            Text(
+                              'Great! Do you Love it.',
+                              style: pt14Regular(context)
+                                  .copyWith(fontSize: Sizes.s13),
+                            )
+                          else
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  if (itemMessageModel.messageModel!.senderId ==
+                                      FirebaseAuth.instance.currentUser!.uid)
+                                    Text(
+                                      'Bạn: ',
+                                      style: pt14Regular(context)
+                                          .copyWith(fontSize: Sizes.s13),
+                                    ),
+                                  Expanded(
+                                    child: Text(
+                                      itemMessageModel
+                                          .messageModel!.messageText!,
+                                      style: pt14Regular(context)
+                                          .copyWith(fontSize: Sizes.s13),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      )
                     ],
                   ),
                 )

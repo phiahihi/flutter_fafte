@@ -39,142 +39,145 @@ class _CommentScreenState extends State<CommentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-        initialChildSize: 0.95,
-        // minChildSize: 0.5,
-        maxChildSize: 0.95,
-        builder: (_, _controller) {
-          return Container(
-            color: white,
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(Sizes.s8),
-                      child: Row(
-                        children: [
-                          Spacer(),
-                          if (widget.listComment.length <= 0)
-                            Text(
-                              'Bình luận',
-                              style: pt16Bold(context),
-                            )
-                          else
-                            Text('Có ${widget.listComment.length} bình luận',
-                                style: pt16Bold(context)),
-                          Spacer(),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(
-                              Icons.close,
-                              color: textColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        controller: _controller,
-                        child: Column(
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: DraggableScrollableSheet(
+          // minChildSize: 0.5,
+          initialChildSize: 1,
+          builder: (_, _controller) {
+            return Container(
+              color: white,
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(Sizes.s8),
+                        child: Row(
                           children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(vertical: Sizes.s16)
-                                  .copyWith(bottom: Sizes.s72),
-                              child: widget.listComment.length > 0
-                                  ? _buildListComment()
-                                  : Center(
-                                      child: Text(
-                                        'Không có bình luận nào',
-                                        style: pt16Regular(context),
-                                      ),
-                                    ),
+                            Spacer(),
+                            if (widget.listComment.length <= 0)
+                              Text(
+                                'Bình luận',
+                                style: pt16Bold(context),
+                              )
+                            else
+                              Text('Có ${widget.listComment.length} bình luận',
+                                  style: pt16Bold(context)),
+                            Spacer(),
+                            InkWell(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Icon(
+                                Icons.close,
+                                color: textColor,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Spacer(),
-                    Container(
-                      color: Colors.grey[200],
-                      padding: EdgeInsets.all(Sizes.s8),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: BuildTextField(
-                              onChanged: (p0) => setState(() {
-                                comment = p0;
-                              }),
-                              controller: _commentController,
-                              hintText: 'Viết bình luận...',
-                              hintStyle: pt14Regular(context),
-                            ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: _controller,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    EdgeInsets.symmetric(vertical: Sizes.s16)
+                                        .copyWith(bottom: Sizes.s72),
+                                child: widget.listComment.length > 0
+                                    ? _buildListComment()
+                                    : Center(
+                                        child: Text(
+                                          'Không có bình luận nào',
+                                          style: pt16Regular(context),
+                                        ),
+                                      ),
+                              ),
+                            ],
                           ),
-                          InkWell(
-                            onTap: () {
-                              if (isLoading) return;
-                              if (_commentController.text.isNotEmpty) {
-                                controller?.commentText =
-                                    _commentController.text;
-                                setState(() {
-                                  isLoading = true;
-                                });
-                                widget.listComment.add(CommentModel(
-                                  userId: controller?.auth.currentUser?.uid,
-                                  postId: widget.postId,
-                                  commentText: _commentController.text,
-                                  timestamp:
-                                      DateTime.now().millisecondsSinceEpoch,
-                                ));
-                                _commentController.clear();
-
-                                controller!
-                                    .commentPost(widget.postId)
-                                    .then((response) {
-                                  if (response.success) {
-                                    print(response.success);
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    controller?.getAllCommentPost();
-                                  } else {
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                  }
-                                }).catchError((error) {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                });
-                              }
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(Sizes.s8),
-                              child: Icon(
-                                Icons.send,
-                                color: comment != '' && !isLoading
-                                    ? splashColor
-                                    : textColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Spacer(),
+                      Container(
+                        color: Colors.grey[200],
+                        padding: EdgeInsets.all(Sizes.s8),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: BuildTextField(
+                                onChanged: (p0) => setState(() {
+                                  comment = p0;
+                                }),
+                                controller: _commentController,
+                                hintText: 'Viết bình luận...',
+                                hintStyle: pt14Regular(context),
                               ),
                             ),
-                          ),
-                        ],
+                            InkWell(
+                              onTap: () {
+                                if (isLoading) return;
+                                if (_commentController.text.isNotEmpty) {
+                                  controller?.commentText =
+                                      _commentController.text;
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+                                  widget.listComment.add(CommentModel(
+                                    userId: controller?.auth.currentUser?.uid,
+                                    postId: widget.postId,
+                                    commentText: _commentController.text,
+                                    timestamp:
+                                        DateTime.now().millisecondsSinceEpoch,
+                                  ));
+                                  _commentController.clear();
+
+                                  controller!
+                                      .commentPost(widget.postId)
+                                      .then((response) {
+                                    if (response.success) {
+                                      print(response.success);
+                                      setState(() {
+                                        isLoading = false;
+                                      });
+                                      controller?.getAllCommentPost();
+                                    } else {
+                                      setState(() {
+                                        isLoading = false;
+                                      });
+                                    }
+                                  }).catchError((error) {
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  });
+                                }
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(Sizes.s8),
+                                child: Icon(
+                                  Icons.send,
+                                  color: comment != '' && !isLoading
+                                      ? splashColor
+                                      : textColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-        });
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }),
+    );
   }
 
   Widget _buildListComment() {

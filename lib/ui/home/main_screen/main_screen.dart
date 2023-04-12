@@ -2,13 +2,12 @@ import 'package:fafte/controller/friend_controller.dart';
 import 'package:fafte/controller/user_controller.dart';
 import 'package:fafte/theme/assets.dart';
 import 'package:fafte/theme/colors.dart';
-import 'package:fafte/theme/sizes.dart';
 import 'package:fafte/ui/home/chat/chat.dart';
 import 'package:fafte/ui/home/friend/friend.dart';
 import 'package:fafte/ui/home/menu/menu_screen.dart';
+import 'package:fafte/ui/home/notification/notification.dart';
 import 'package:fafte/ui/home/post/post_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class MainScreen extends StatefulWidget {
@@ -54,7 +53,7 @@ class _MainScreenState extends State<MainScreen> {
           PostScreen(),
           FriendScreen(),
           ChatScreen(),
-          Container(),
+          NotificationScreen(),
           MenuScreen(),
         ],
       ),

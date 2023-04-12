@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fafte/controller/notification_controller.dart';
 import 'package:fafte/controller/post_controller.dart';
 import 'package:fafte/models/like.dart';
 import 'package:fafte/models/post.dart';
@@ -26,8 +27,9 @@ class PostScreen extends StatefulWidget {
 class _PostScreenState extends State<PostScreen> {
   bool isLoading = false;
   bool _isLikePressed = false;
-
   PostController? _controller;
+  NotificationController _notificationController =
+      NotificationController.instance;
 
   @override
   void didChangeDependencies() {
@@ -45,9 +47,14 @@ class _PostScreenState extends State<PostScreen> {
   }
 
   void _likePost(String postId) async {
+    final token = await _notificationController.messaging.getToken();
     _controller!.likePost(postId).then((response) async {
       if (response.success) {
-        print(response.data);
+        _notificationController.sendNotification(
+          'Like',
+          'Someone liked your post',
+          token.toString(),
+        );
         setState(() {
           _controller?.listLikePost.add(
             LikeModel(
@@ -130,8 +137,8 @@ class _PostScreenState extends State<PostScreen> {
                     child: ListView(
                       children: [
                         ItemPostButton(),
-                        SpacingBox(h: 8),
-                        _buildNewFeed(context),
+                        // SpacingBox(h: 8),
+                        // _buildNewFeed(context),
                         SpacingBox(h: 8),
                         _buildListPost()
                       ],
@@ -275,17 +282,12 @@ class _PostScreenState extends State<PostScreen> {
                       splashColor: greyAccent.withOpacity(0.01),
                       onTap: () => showModalBottomSheet(
                             context: context,
+                            useSafeArea: true,
                             isScrollControlled: true,
                             backgroundColor: Colors.transparent,
-                            builder: (context) => Scaffold(
-                              backgroundColor: Colors.transparent,
-                              resizeToAvoidBottomInset: true,
-                              body: SafeArea(
-                                child: CommentScreen(
-                                  postId: model.id ?? '',
-                                  listComment: listCommentPost ?? [],
-                                ),
-                              ),
+                            builder: (context) => CommentScreen(
+                              postId: model.id ?? '',
+                              listComment: listCommentPost ?? [],
                             ),
                           ),
                       child: Padding(
@@ -376,16 +378,11 @@ class _PostScreenState extends State<PostScreen> {
                           onTap: () => showModalBottomSheet(
                             context: context,
                             isScrollControlled: true,
+                            useSafeArea: true,
                             backgroundColor: Colors.transparent,
-                            builder: (context) => Scaffold(
-                              backgroundColor: Colors.transparent,
-                              resizeToAvoidBottomInset: true,
-                              body: SafeArea(
-                                child: CommentScreen(
-                                  postId: model.id ?? '',
-                                  listComment: listCommentPost ?? [],
-                                ),
-                              ),
+                            builder: (context) => CommentScreen(
+                              postId: model.id ?? '',
+                              listComment: listCommentPost ?? [],
                             ),
                           ),
                           child: Row(

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fafte/base_response/base_response.dart';
 import 'package:fafte/controller/auth_controller.dart';
+import 'package:fafte/controller/notification_controller.dart';
 import 'package:fafte/models/comment.dart';
 import 'package:fafte/models/like.dart';
 import 'package:fafte/models/post.dart';
@@ -16,6 +17,8 @@ class PostController extends ChangeNotifier {
   PostController._privateConstructor();
   static final PostController instance = PostController._privateConstructor();
   final authController = AuthController.instance;
+  final notificationController = NotificationController.instance;
+
   final storage = FirebaseStorage.instance;
   final firestore = FirebaseFirestore.instance;
   final auth = FirebaseAuth.instance;
@@ -46,6 +49,11 @@ class PostController extends ChangeNotifier {
     return UserModel.fromDocument(user);
   }
 
+  Future<PostModel> getPost(String postId) async {
+    final post = await firestore.collection("posts").doc(postId).get();
+    return PostModel.fromJson(post.data()!);
+  }
+
   Future<void> pickImage() async {
     final imageFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -64,7 +72,6 @@ class PostController extends ChangeNotifier {
           .collection('posts')
           .add(<String, dynamic>{});
       final id = await post.id;
-      print(id);
 
       postModel.postImageUrl = urlImage;
       postModel.id = id;
@@ -108,7 +115,6 @@ class PostController extends ChangeNotifier {
 
   Future<BaseResponse> getAllPostById(String id) async {
     try {
-      print(id);
       final posts = await firestore
           .collection("posts")
           .where('userId', isEqualTo: id)
@@ -214,6 +220,9 @@ class PostController extends ChangeNotifier {
 
   Future<BaseResponse> commentPost(String postId) async {
     try {
+      final token = await notificationController.messaging.getToken();
+      final sender = await getPoster(auth.currentUser!.uid);
+
       final comment = await FirebaseFirestore.instance
           .collection('comments')
           .add(<String, dynamic>{});
@@ -227,6 +236,27 @@ class PostController extends ChangeNotifier {
           .collection('comments')
           .doc(id)
           .set(commentModel.toJson());
+      final post = await getPost(postId);
+      final recipientId = await getPoster(post.userId!);
+      if (recipientId.id == auth.currentUser?.uid) {
+      } else {
+        await firestore.collection('notifications').add(<String, dynamic>{
+          'title': 'New comment on your post',
+          'body':
+              'Your post has been commented on by ${sender.userName}: $commentText',
+          'type': 'comment',
+          'postId': postId,
+          'senderId': auth.currentUser?.uid,
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'recipientId': recipientId.id,
+          'read': false,
+        });
+
+        await notificationController.sendNotification(
+            'New comment on your post',
+            'Your post has been commented on by ${sender.userName}: $commentText',
+            token.toString());
+      }
 
       return BaseResponse(
         message: 'Success',

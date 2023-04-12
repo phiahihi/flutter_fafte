@@ -2,6 +2,7 @@
     package="com.extan.fafte">
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
    <application
         android:label="fafte"
         android:name="${applicationName}"
@@ -34,5 +35,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_notifications_icon" />
     </application>
 </manifest>
