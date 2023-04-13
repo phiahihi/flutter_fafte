@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fafte/base_response/base_response.dart';
 import 'package:fafte/main.dart';
 import 'package:fafte/models/notification.dart';
 import 'package:fafte/utils/export.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,6 +16,8 @@ class NotificationController extends ChangeNotifier {
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  List<NotificationModel> listNotificationModel = [];
 
   Future<void> sendNotification(
       String title, String content, String token) async {
@@ -48,18 +52,26 @@ class NotificationController extends ChangeNotifier {
     }
   }
 
-  Future<List<NotificationModel>> fetchNotifications(String userId) async {
-    final querySnapshot = await firestore
-        .collection('notifications')
-        .where('recipientId', isEqualTo: userId)
-        .get();
+  Future<BaseResponse> getAllNotification() async {
+    try {
+      final notifications = await firestore
+          .collection('notifications')
+          .where('recipientId',
+              isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .get();
+      final notisFirebase = notifications.docs.map((e) => e.data()).toList();
+      listNotificationModel =
+          notisFirebase.map((e) => NotificationModel.fromJson(e)).toList();
 
-    List<NotificationModel> notifications = [];
-
-    querySnapshot.docs.forEach((doc) {
-      notifications.add(NotificationModel.fromJson(doc.data()));
-    });
-    // notifications.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
-    return notifications;
+      return BaseResponse(
+        message: 'Success',
+        success: true,
+      );
+    } catch (error) {
+      return BaseResponse(
+        message: error.toString(),
+        success: false,
+      );
+    }
   }
 }

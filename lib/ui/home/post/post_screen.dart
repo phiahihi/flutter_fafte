@@ -240,9 +240,14 @@ class _PostScreenState extends State<PostScreen> {
                 : CircularProgressIndicator(
                     color: splashColor,
                   ),
-            title: Text(
-              userModel?.userName ?? '',
-              style: pt16Regular(context),
+            title: InkWell(
+              onTap: () {
+                navigateTo(PersonalScreen(model: userModel));
+              },
+              child: Text(
+                userModel?.userName ?? '',
+                style: pt16Regular(context),
+              ),
             ),
             subtitle: Text(
               timestampToDate(model.timeStamp).timeAgoEnShort(),

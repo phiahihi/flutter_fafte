@@ -109,7 +109,6 @@ class _DetailPostScreenState extends State<DetailPostScreen> {
     super.dispose();
   }
 
-  PostController? controller;
   bool isLoading = false;
   String comment = '';
 
@@ -380,26 +379,26 @@ class _DetailPostScreenState extends State<DetailPostScreen> {
                       onTap: () async {
                         if (isLoading) return;
                         if (_commentController.text.isNotEmpty) {
-                          controller?.commentText = _commentController.text;
+                          _controller?.commentText = _commentController.text;
                           setState(() {
                             isLoading = true;
                           });
-                          listCommentPost?.add(CommentModel(
-                            userId: controller?.auth.currentUser?.uid,
+                          _controller?.listCommentPost.add(CommentModel(
+                            userId: _controller?.auth.currentUser?.uid,
                             postId: widget.model.id,
                             commentText: _commentController.text,
                             timestamp: DateTime.now().millisecondsSinceEpoch,
                           ));
                           _commentController.clear();
 
-                          await controller
+                          await _controller
                               ?.commentPost(widget.model.id!)
                               .then((response) {
                             if (response.success) {
                               print('sss');
                               setState(() {
                                 isLoading = false;
-                                controller?.getAllPostById(widget.model.id!);
+                                _controller?.getAllPostById(widget.model.id!);
                               });
                             } else {
                               setState(() {
@@ -417,9 +416,7 @@ class _DetailPostScreenState extends State<DetailPostScreen> {
                         padding: EdgeInsets.all(Sizes.s8),
                         child: Icon(
                           Icons.send,
-                          color: comment != '' && !isLoading
-                              ? splashColor
-                              : textColor,
+                          color: comment != '' ? splashColor : textColor,
                         ),
                       ),
                     ),

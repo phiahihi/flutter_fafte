@@ -1,7 +1,9 @@
 import 'package:fafte/controller/friend_controller.dart';
+import 'package:fafte/controller/notification_controller.dart';
 import 'package:fafte/controller/user_controller.dart';
 import 'package:fafte/theme/assets.dart';
 import 'package:fafte/theme/colors.dart';
+import 'package:fafte/theme/text_style.dart';
 import 'package:fafte/ui/home/chat/chat.dart';
 import 'package:fafte/ui/home/friend/friend.dart';
 import 'package:fafte/ui/home/menu/menu_screen.dart';
@@ -22,6 +24,8 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   UserController? userController;
+  NotificationController notificationController =
+      NotificationController.instance;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -40,6 +44,15 @@ class _MainScreenState extends State<MainScreen> {
       print('ss');
       UserController.instance.getUser();
     }
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationController.instance.getAllNotification();
+      setState(() {});
+    });
+    super.initState();
   }
 
   @override
@@ -74,8 +87,31 @@ class _MainScreenState extends State<MainScreen> {
                   SvgPicture.asset(Assets.messageSquare, color: splashColor),
               label: ''),
           BottomNavigationBarItem(
-              icon: SvgPicture.asset(Assets.bell),
-              activeIcon: SvgPicture.asset(Assets.bell, color: splashColor),
+              icon: Badge(
+                label: Text(
+                  notificationController.listNotificationModel
+                      .where((element) => element.read == false)
+                      .toList()
+                      .length
+                      .toString(),
+                  style: pt12Regular(context).copyWith(color: white),
+                ),
+                child: SvgPicture.asset(Assets.bell),
+              ),
+              activeIcon: Badge(
+                label: Text(
+                  notificationController.listNotificationModel
+                      .where((element) => element.read == false)
+                      .toList()
+                      .length
+                      .toString(),
+                  style: pt12Regular(context).copyWith(color: white),
+                ),
+                child: SvgPicture.asset(
+                  Assets.bell,
+                  color: splashColor,
+                ),
+              ),
               label: ''),
           BottomNavigationBarItem(
               icon: SvgPicture.asset(Assets.menu),
