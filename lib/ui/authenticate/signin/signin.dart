@@ -21,7 +21,7 @@ class _SignInScreenState extends State<SignInScreen> {
       body: SafeArea(
           child: Column(
         children: [
-          BuildAppBar(name: S.current.signIn),
+          BuildAppBar(name: 'Đăng nhập'),
           Expanded(
             child: SingleChildScrollView(
               child: Column(

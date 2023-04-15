@@ -30,7 +30,7 @@ class _WelcomeV2LoginScreenState extends State<WelcomeV2LoginScreen> {
 
   String? validate(String? value, String error) {
     if (value == null || value.isEmpty) {
-      return 'Please enter $error';
+      return 'Vui lòng điền $error';
     }
     return null;
   }
@@ -43,7 +43,7 @@ class _WelcomeV2LoginScreenState extends State<WelcomeV2LoginScreen> {
         child: Stack(children: [
           Column(
             children: [
-              BuildAppBar(name: S.current.signIn),
+              BuildAppBar(name: 'Đăng nhập'),
               Expanded(
                 child: SingleChildScrollView(
                   child: Form(
@@ -72,7 +72,7 @@ class _WelcomeV2LoginScreenState extends State<WelcomeV2LoginScreen> {
                                   validator: (value) {
                                     if (!StringValidator(value!)
                                         .isValidEmail()) {
-                                      return 'Email invalid';
+                                      return 'Email không hợp lệ';
                                     }
                                     final error = validate(
                                         value, S.current.email.toLowerCase());
@@ -95,10 +95,9 @@ class _WelcomeV2LoginScreenState extends State<WelcomeV2LoginScreen> {
                                   controller: _passwordController,
                                   validator: (value) {
                                     if (!StringValidator(value!).isPassword()) {
-                                      return 'Password invalid';
+                                      return 'Mật khẩu phải có ít nhất 8 ký tự';
                                     }
-                                    final error = validate(value,
-                                        S.current.password.toLowerCase());
+                                    final error = validate(value, 'mật khẩu');
                                     if (error != null) {
                                       return error;
                                     } else {
@@ -109,7 +108,7 @@ class _WelcomeV2LoginScreenState extends State<WelcomeV2LoginScreen> {
                                     padding: EdgeInsets.all(Sizes.s12),
                                     child: SvgPicture.asset(Assets.lock),
                                   ),
-                                  hintText: S.current.password,
+                                  hintText: 'Mật khẩu',
                                 ),
                                 SpacingBox(h: 20),
                                 Row(
@@ -131,7 +130,7 @@ class _WelcomeV2LoginScreenState extends State<WelcomeV2LoginScreen> {
                                           onChanged: (value) {},
                                         ),
                                         Text(
-                                          S.current.rememberMe,
+                                          'Nhớ mật khẩu',
                                           style: pt16Regular(context),
                                         )
                                       ],
@@ -141,7 +140,7 @@ class _WelcomeV2LoginScreenState extends State<WelcomeV2LoginScreen> {
                                         navigateTo(ForgetPasswordScreen());
                                       },
                                       child: Text(
-                                        S.current.forgetPassword,
+                                        'Quên mật khẩu?',
                                         style: pt16Regular(context)
                                             .copyWith(color: blueAccent),
                                       ),
@@ -184,7 +183,7 @@ class _WelcomeV2LoginScreenState extends State<WelcomeV2LoginScreen> {
                                       });
                                     }
                                   },
-                                  text: S.current.signIn,
+                                  text: 'Đăng nhập',
                                   style: pt16Regular(context).copyWith(
                                     fontWeight: FontWeight.w500,
                                     fontSize: Sizes.s18,
@@ -226,7 +225,7 @@ class _WelcomeV2LoginScreenState extends State<WelcomeV2LoginScreen> {
                                           .showSnackBar(error);
                                     });
                                   },
-                                  text: S.current.signInWithGoogle,
+                                  text: 'Đăng nhập với Google',
                                   style: pt16Regular(context).copyWith(
                                     fontWeight: FontWeight.w500,
                                     fontSize: Sizes.s18,
@@ -242,7 +241,7 @@ class _WelcomeV2LoginScreenState extends State<WelcomeV2LoginScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                S.current.alreadyHaveNotAnAccount,
+                                'Bạn chưa có tài khoản? ',
                                 style: pt16Regular(context).copyWith(
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -259,7 +258,7 @@ class _WelcomeV2LoginScreenState extends State<WelcomeV2LoginScreen> {
                                   }
                                 },
                                 child: Text(
-                                  S.current.signUp,
+                                  'Đăng ký!',
                                   style: pt16Regular(context).copyWith(
                                       fontWeight: FontWeight.w500,
                                       color: blueAccent),

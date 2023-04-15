@@ -39,7 +39,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   String? validate(String? value, String error) {
     if (value == null || value.isEmpty) {
-      return 'Please enter $error';
+      return 'Vui lòng điền $error';
     }
     return null;
   }
@@ -61,7 +61,7 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Stack(children: [
         Column(
           children: [
-            BuildAppBar(name: S.current.signUp2),
+            BuildAppBar(name: 'Đăng ký'),
             Expanded(
               child: SingleChildScrollView(
                 child: Form(
@@ -122,25 +122,24 @@ class _SignupScreenState extends State<SignupScreen> {
                               BuildTextField(
                                   controller: _fullNameController,
                                   validator: (value) {
-                                    final error = validate(value,
-                                        S.current.fullName.toLowerCase());
+                                    final error = validate(value, 'họ và tên');
                                     if (error != null) {
                                       return error;
                                     } else {
                                       return null;
                                     }
                                   },
-                                  hintText: S.current.fullName,
+                                  hintText: 'Họ và tên',
                                   contentPadding: EdgeInsets.all(Sizes.s14)),
                               const SpacingBox(h: 16),
                               BuildTextField(
                                   validator: (value) {
                                     if (!StringValidator(value!)
                                         .isValidPhone()) {
-                                      return 'Phone number invalid';
+                                      return 'Số điện thoại không hợp lệ';
                                     }
-                                    final error = validate(value,
-                                        S.current.phoneNumber.toLowerCase());
+                                    final error =
+                                        validate(value, 'số điện thoại');
                                     if (error != null) {
                                       return error;
                                     } else {
@@ -148,7 +147,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     }
                                   },
                                   controller: _phoneNumberController,
-                                  hintText: S.current.phoneNumber,
+                                  hintText: 'Số điện thoại',
                                   contentPadding: EdgeInsets.all(Sizes.s14)),
                               const SpacingBox(
                                 h: 16,
@@ -157,10 +156,10 @@ class _SignupScreenState extends State<SignupScreen> {
                                   validator: (value) {
                                     if (!StringValidator(value!)
                                         .isValidEmail()) {
-                                      return 'Email invalid';
+                                      return 'Email không hợp lệ';
                                     }
-                                    final error = validate(
-                                        value, S.current.email.toLowerCase());
+                                    final error =
+                                        validate(value, 'email đăng nhập');
                                     if (error != null) {
                                       return error;
                                     } else {
@@ -176,10 +175,10 @@ class _SignupScreenState extends State<SignupScreen> {
                               BuildTextField(
                                   validator: (value) {
                                     if (!StringValidator(value!).isPassword()) {
-                                      return 'Password invalid';
+                                      return 'Mật khẩu phải có ít nhất 8 ký tự, 1 chữ hoa, 1 chữ thường và 1 số';
                                     }
-                                    final error = validate(value,
-                                        S.current.password.toLowerCase());
+                                    final error =
+                                        validate(value, 'mật khẩu đăng nhập');
                                     if (error != null) {
                                       return error;
                                     } else {
@@ -187,7 +186,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     }
                                   },
                                   controller: _passwordController,
-                                  hintText: S.current.password,
+                                  hintText: 'Mật khẩu',
                                   contentPadding: EdgeInsets.all(Sizes.s14)),
                               const SpacingBox(
                                 h: 16,
@@ -195,12 +194,10 @@ class _SignupScreenState extends State<SignupScreen> {
                               BuildTextField(
                                   validator: (value) {
                                     if (_passwordController.text != value) {
-                                      return 'Confirm password does not match';
+                                      return 'Mật khẩu không khớp';
                                     }
                                     final error = validate(
-                                        value,
-                                        S.current.confirmPassword
-                                            .toLowerCase());
+                                        value, 'xac nhận mật khẩu đăng nhập');
                                     if (error != null) {
                                       return error;
                                     } else {
@@ -208,7 +205,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     }
                                   },
                                   controller: _confirmPasswordController,
-                                  hintText: S.current.confirmPassword,
+                                  hintText: 'Xác nhận mật khẩu',
                                   contentPadding: EdgeInsets.all(Sizes.s14)),
                               const SpacingBox(
                                 h: 29,
@@ -238,17 +235,16 @@ class _SignupScreenState extends State<SignupScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          S.current
-                                              .byCreatingAnAccountYouAgreeTo,
+                                          'Bằng cách tạo tài khoản, bạn đồng ý với Điều khoản dịch vụ và Chính sách quyền riêng tư của chúng tôi',
                                           style: pt16Regular(context)
                                               .copyWith(color: splashColor),
                                         ),
-                                        Text(
-                                          S.current
-                                              .ourTermsOfServiceAndPrivacyPolicy,
-                                          style: pt16Regular(context)
-                                              .copyWith(color: splashColor),
-                                        ),
+                                        // Text(
+                                        //   S.current
+                                        //       .ourTermsOfServiceAndPrivacyPolicy,
+                                        //   style: pt16Regular(context)
+                                        //       .copyWith(color: splashColor),
+                                        // ),
                                       ],
                                     ),
                                   )
@@ -297,7 +293,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     }
                                   }
                                 },
-                                text: S.current.signUp2,
+                                text: 'Đăng ký',
                                 style: pt16Regular(context).copyWith(
                                   fontWeight: FontWeight.w500,
                                   fontSize: Sizes.s18,
@@ -320,7 +316,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                      S.current.alreadyHaveAnAccount,
+                                      'Bạn đã có tài khoản ?',
                                       style: pt16Regular(context),
                                     ),
                                     const SpacingBox(
@@ -335,7 +331,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                         }
                                       },
                                       child: Text(
-                                        '${S.current.signIn} !',
+                                        'Đăng nhập !',
                                         style: pt16Bold(context)
                                             .copyWith(color: blueAccent),
                                       ),

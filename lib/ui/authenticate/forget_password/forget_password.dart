@@ -24,7 +24,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
 
   String? validate(String? value, String error) {
     if (value == null || value.isEmpty) {
-      return 'Please enter $error';
+      return 'Vui lòng điền $error';
     }
     return null;
   }
@@ -37,7 +37,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
           child: Stack(children: [
         Column(
           children: [
-            BuildAppBar(name: S.current.forgetPassword),
+            BuildAppBar(name: 'Quên mật khẩu'),
             Expanded(
               child: SingleChildScrollView(
                 child: Form(
@@ -62,15 +62,9 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                           child: Column(
                             children: [
                               Text(
-                                S.current.chooseASecurePasswordThatWillBe,
+                                'Chọn một mật khẩu an toàn\n mà bạn sẽ dễ nhớ.',
                                 style: pt16Regular(context),
-                              ),
-                              SpacingBox(
-                                h: 3,
-                              ),
-                              Text(
-                                S.current.easyForYouToRemember,
-                                style: pt16Regular(context),
+                                textAlign: TextAlign.center,
                               ),
                               SpacingBox(
                                 h: 29,
@@ -78,7 +72,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                               BuildTextField(
                                 validator: (value) {
                                   if (!StringValidator(value!).isValidEmail()) {
-                                    return 'Email invalid';
+                                    return 'Email không hợp lệ';
                                   }
                                   final error = validate(
                                       value, S.current.email.toLowerCase());
@@ -130,7 +124,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                             });
                           }
                         },
-                        text: S.current.sendPassword,
+                        text: 'Gửi mật khẩu mới',
                         style: pt16Regular(context).copyWith(
                           fontWeight: FontWeight.w500,
                           fontSize: Sizes.s18,

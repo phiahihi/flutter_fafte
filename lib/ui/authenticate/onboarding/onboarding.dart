@@ -7,18 +7,21 @@ import 'package:flutter/services.dart';
 
 final List<Map<String, String>> splashData = [
   {
-    "title": S.current.welcomeTo,
-    "title2": S.current.socialVideoApp,
+    "title": 'Chào mừng bạn đến với ứng dụng xã hội Fafte',
+    "subtitle":
+        "Ứng dụng xã hội Fafte giúp bạn kết nối với mọi người và chia sẻ những khoảnh khắc đáng nhớ.",
     'image': Assets.onboarding1,
   },
   {
-    "title": S.current.unlimited,
-    "title2": S.current.videoSharing,
+    "title": "Tích hợp các tính năng giải trí và trò chuyện",
+    "subtitle":
+        "Mang đến cho bạn trải nghiệm giao tiếp trực tuyến vô cùng thú vị và phong phú.",
     'image': Assets.onboarding2,
   },
   {
-    "title": S.current.easyToEdit,
-    "title2": S.current.photoAndVideo,
+    "title": "Với khả năng tùy chỉnh và đa dạng hóa tính năng",
+    "subtitle":
+        "Cho phép bạn tạo ra một không gian trực tuyến riêng tư và độc đáo cho riêng mình.",
     'image': Assets.onboarding3,
   },
 ];
@@ -75,7 +78,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               h: 20,
             ),
             SizedBox(
-              height: Sizes.s286,
+              height: Sizes.s350,
               child: PageView.builder(
                 controller: _controller,
                 itemCount: splashData.length,
@@ -100,34 +103,36 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                 style: pt22Bold(context).copyWith(
                                   fontSize: Sizes.s30,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
-                              const SpacingBox(
-                                h: 1,
-                              ),
-                              Text(
-                                '${splashData[index]['title2']}',
-                                style: pt22Bold(context).copyWith(
-                                  fontSize: Sizes.s30,
-                                ),
-                              ),
+                              // const SpacingBox(
+                              //   h: 1,
+                              // ),
+                              // Text(
+                              //   '${splashData[index]['title2']}',
+                              //   style: pt22Bold(context).copyWith(
+                              //     fontSize: Sizes.s30,
+                              //   ),
+                              // ),
                               const SpacingBox(
                                 h: 15,
                               ),
                               Text(
-                                S.current.referenceSiteAboutLorem,
+                                '${splashData[index]['subtitle']}',
                                 style: pt16Regular(context).copyWith(
                                   fontSize: Sizes.s18,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
-                              const SpacingBox(
-                                h: 1,
-                              ),
-                              Text(
-                                S.current.ipsumGivingInformationOrigins,
-                                style: pt16Regular(context).copyWith(
-                                  fontSize: Sizes.s18,
-                                ),
-                              ),
+                              // const SpacingBox(
+                              //   h: 1,
+                              // ),
+                              // Text(
+                              //   S.current.ipsumGivingInformationOrigins,
+                              //   style: pt16Regular(context).copyWith(
+                              //     fontSize: Sizes.s18,
+                              //   ),
+                              // ),
                               if (index == _currentPage)
                                 Column(
                                   children: [
@@ -140,7 +145,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                             clearStack: true);
                                       },
                                       width: deviceWidth(context) - Sizes.s138,
-                                      text: S.current.getStarted,
+                                      text: 'Bắt đầu',
                                     )
                                   ],
                                 )
@@ -186,7 +191,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   }
                 },
                 child: Text(
-                  S.current.skip,
+                  'Bỏ qua',
                   style: pt20Bold(context).copyWith(
                     fontWeight: FontWeight.w500,
                     height: 0.9,
