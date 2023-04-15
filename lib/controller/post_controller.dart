@@ -46,8 +46,7 @@ class PostController extends ChangeNotifier {
   }
 
   Future<UserModel> getPoster(String userId) async {
-    DocumentSnapshot user =
-        await firestore.collection("users").doc(userId).get();
+    final user = await firestore.collection("users").doc(userId).get();
     return UserModel.fromDocument(user);
   }
 
@@ -222,7 +221,6 @@ class PostController extends ChangeNotifier {
 
   Future<BaseResponse> commentPost(String postId) async {
     try {
-      final token = await notificationController.messaging.getToken();
       final sender = await getPoster(auth.currentUser!.uid);
 
       final comment = await FirebaseFirestore.instance
@@ -243,9 +241,8 @@ class PostController extends ChangeNotifier {
       if (recipientId.id == auth.currentUser?.uid) {
       } else {
         await firestore.collection('notifications').add(<String, dynamic>{
-          'title': 'New comment on your post',
-          'body':
-              'Your post has been commented on by ${sender.userName}: $commentText',
+          'title': 'Có một bình luận mới trên bài viết của bạn',
+          'body': '${sender.userName} đã bình luận: $commentText',
           'type': 'comment',
           'postId': postId,
           'senderId': auth.currentUser?.uid,
@@ -255,9 +252,9 @@ class PostController extends ChangeNotifier {
         });
 
         await notificationController.sendNotification(
-            'New comment on your post',
-            'Your post has been commented on by ${sender.userName}: $commentText',
-            token.toString());
+            'Có một bình luận mới trên bài viết của bạn',
+            '${sender.userName} đã bình luận: $commentText',
+            recipientId.fcmToken!);
       }
 
       return BaseResponse(

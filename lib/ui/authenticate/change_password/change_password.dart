@@ -45,7 +45,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           children: [
             Column(
               children: [
-                BuildAppBar(name: S.current.changePassword),
+                BuildAppBar(name: 'Đổi mật khẩu'),
                 Form(
                   key: _formKey,
                   child: Expanded(
@@ -75,7 +75,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                     validator: (value) {
                                       if (!StringValidator(value!)
                                           .isPassword()) {
-                                        return 'Old password invalid';
+                                        return 'Mật khẩu cũ không hợp lệ';
                                       }
                                       final error = validate(value,
                                           S.current.password.toLowerCase());
@@ -86,7 +86,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                       }
                                     },
                                     obscureText: isShowOldPassword,
-                                    hintText: S.current.oldPassword,
+                                    hintText: 'Mật khẩu cũ',
                                     suffixIcon: Padding(
                                       padding: EdgeInsets.all(Sizes.s14)
                                           .copyWith(left: 0),
@@ -133,7 +133,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                       }
                                     },
                                     obscureText: isShowPassword,
-                                    hintText: S.current.password,
+                                    hintText: 'Mật khẩu mới',
                                     suffixIcon: Padding(
                                       padding: EdgeInsets.all(Sizes.s14)
                                           .copyWith(left: 0),
@@ -177,7 +177,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                       }
                                     },
                                     obscureText: isShowConfirmPassword,
-                                    hintText: S.current.confirmPassword,
+                                    hintText: 'Xác nhận mật khẩu mới',
                                     suffixIcon: Padding(
                                       padding: EdgeInsets.all(Sizes.s14)
                                           .copyWith(left: 0),
@@ -246,7 +246,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                         });
                                       }
                                     },
-                                    text: S.current.saveNow,
+                                    text: 'Lưu thay đổi',
                                     style: pt16Regular(context).copyWith(
                                       fontWeight: FontWeight.w500,
                                       fontSize: Sizes.s18,

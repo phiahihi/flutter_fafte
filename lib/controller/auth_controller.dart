@@ -8,6 +8,7 @@ import 'package:fafte/ui/authenticate/welcome_login/welcome_login.dart';
 import 'package:fafte/ui/home/main_screen/main_screen.dart';
 import 'package:fafte/utils/export.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -23,8 +24,10 @@ class AuthController extends ChangeNotifier {
   String? id;
 
   Future<BaseResponse> register(String email, String password, String fullName,
-      String? pickedFile) async {
+      String? pickedFile, String phoneNumber) async {
     try {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+
       var urlImage;
       if (pickedFile != null) {
         urlImage = await _uploadImage(File(pickedFile));
@@ -35,12 +38,16 @@ class AuthController extends ChangeNotifier {
       await userController.createUser(
         id!,
         UserModel(
-            email: email,
-            password: password,
-            profileImageUrl: urlImage,
-            id: id,
-            userName: fullName),
+          email: email,
+          password: password,
+          profileImageUrl: urlImage,
+          id: id,
+          phoneNumber: phoneNumber,
+          userName: fullName,
+          fcmToken: fcmToken ?? '',
+        ),
       );
+      await signIn(email, password);
       return BaseResponse(
         message: 'Success',
         success: true,
@@ -105,11 +112,14 @@ class AuthController extends ChangeNotifier {
 
   Future<BaseResponse> signIn(String email, String password) async {
     try {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
       final result = await auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
       user = result;
+
+      await userController.updateFcmToken(user!.user!.uid, fcmToken!);
       return BaseResponse(
         message: 'Success',
         success: true,

@@ -1,5 +1,7 @@
+import 'package:fafte/controller/chat_controller.dart';
 import 'package:fafte/controller/friend_controller.dart';
 import 'package:fafte/controller/notification_controller.dart';
+import 'package:fafte/controller/post_controller.dart';
 import 'package:fafte/controller/user_controller.dart';
 import 'package:fafte/theme/assets.dart';
 import 'package:fafte/theme/colors.dart';
@@ -30,9 +32,20 @@ class _MainScreenState extends State<MainScreen> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-
+      if (index == 0) {
+        PostController.instance.getAllPost();
+      }
       if (index == 1) {
         FriendController.instance.get10Invitation();
+      }
+      if (index == 2) {
+        ChatController.instance.getAllBoxChat();
+      }
+      if (index == 3) {
+        NotificationController.instance.getAllNotification();
+      }
+      if (index == 4) {
+        UserController.instance.getUser();
       }
     });
   }

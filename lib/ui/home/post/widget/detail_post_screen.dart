@@ -45,19 +45,18 @@ class _DetailPostScreenState extends State<DetailPostScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _controller?.getLikePost();
-
+      _controller?.getAllCommentPost();
       setState(() {});
     });
   }
 
   void _likePost(String postId) async {
-    final token = await _notificationController.messaging.getToken();
     _controller!.likePost(postId).then((response) async {
       if (response.success) {
         _notificationController.sendNotification(
-          'Like',
-          'Someone liked your post',
-          token.toString(),
+          'Thích',
+          'Có người đã thích bài viết của bài',
+          widget.userModel!.fcmToken!,
         );
         setState(() {
           _controller?.listLikePost.add(
@@ -141,10 +140,11 @@ class _DetailPostScreenState extends State<DetailPostScreen> {
                           physics: NeverScrollableScrollPhysics(),
                           children: [
                             ListTile(
-                              leading: widget.userModel != null
+                              leading: widget.userModel != null ||
+                                      widget.userModel?.backgroundImageUrl != ''
                                   ? CircleAvatar(
                                       backgroundImage: NetworkImage(
-                                        widget.userModel!.profileImageUrl!,
+                                        widget.userModel!.profileImageUrl ?? '',
                                       ),
                                     )
                                   : CircularProgressIndicator(
@@ -436,15 +436,13 @@ class _DetailPostScreenState extends State<DetailPostScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          user != null
+          user?.backgroundImageUrl != null || user?.backgroundImageUrl != ''
               ? CircleAvatar(
                   backgroundImage: NetworkImage(
-                    user.profileImageUrl!,
+                    user?.profileImageUrl ?? '',
                   ),
                 )
-              : CircularProgressIndicator(
-                  color: splashColor,
-                ),
+              : CircleAvatar(),
           Expanded(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: Sizes.s16),

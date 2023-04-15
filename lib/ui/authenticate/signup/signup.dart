@@ -267,10 +267,12 @@ class _SignupScreenState extends State<SignupScreen> {
                                       });
                                       authController
                                           .register(
-                                              _emailController.text,
-                                              _confirmPasswordController.text,
-                                              _fullNameController.text,
-                                              _pickedImage?.path)
+                                        _emailController.text,
+                                        _confirmPasswordController.text,
+                                        _fullNameController.text,
+                                        _pickedImage?.path,
+                                        _phoneNumberController.text,
+                                      )
                                           .then((response) {
                                         if (response.success) {
                                           setState(() {

@@ -36,7 +36,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   final _controller = PageController(viewportFraction: 0.87);
   int _currentPage = 0;
-  List<Map<String, String>> _getSplashData() => splashData;
 
   void initState() {
     super.initState();

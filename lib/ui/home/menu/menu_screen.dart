@@ -3,6 +3,7 @@ import 'package:fafte/controller/user_controller.dart';
 import 'package:fafte/theme/assets.dart';
 import 'package:fafte/ui/authenticate/change_password/change_password.dart';
 import 'package:fafte/ui/authenticate/welcome_login/welcome_login.dart';
+import 'package:fafte/ui/home/menu/widget/update_info_screen.dart';
 import 'package:fafte/ui/home/personal/personal.dart';
 import 'package:fafte/ui/widget/container/spacing_box.dart';
 import 'package:fafte/utils/export.dart';
@@ -106,6 +107,17 @@ class _MenuScreenState extends State<MenuScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    _builItemFeature(context,
+                        title: 'Cập nhật thông tin',
+                        subtitle: 'Dùng để cập nhật thông tin cá nhân',
+                        icon: Assets.repeat, onTap: () {
+                      navigateTo(UpdateInfoScreen(
+                        userModel: model.userModel!,
+                      ));
+                    }),
+                    Divider(
+                      height: Sizes.s1,
+                    ),
                     _builItemFeature(context,
                         title: 'Đổi mật khẩu',
                         subtitle: 'Dùng để đổi mật khẩu',
@@ -311,7 +323,8 @@ class _MenuScreenState extends State<MenuScreen> {
           // ),
           leading: CircleAvatar(
             radius: Sizes.s30,
-            backgroundImage: model.userModel?.profileImageUrl == null
+            backgroundImage: model.userModel?.profileImageUrl == null ||
+                    model.userModel?.profileImageUrl == ''
                 ? null
                 : NetworkImage(model.userModel!.profileImageUrl!),
           ),

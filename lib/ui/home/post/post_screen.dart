@@ -48,21 +48,21 @@ class _PostScreenState extends State<PostScreen> {
     });
   }
 
-  void _likePost(String postId) async {
-    final token = await _notificationController.messaging.getToken();
-    _controller!.likePost(postId).then((response) async {
+  void _likePost(PostModel post) async {
+    final user = await _controller?.getPoster(post.userId!);
+    _controller!.likePost(post.id!).then((response) async {
       if (response.success) {
         _notificationController.sendNotification(
-          'Like',
-          'Someone liked your post',
-          token.toString(),
+          'Thích',
+          'Có người đã thích bài viết của bạn',
+          user?.fcmToken ?? '',
         );
         setState(() {
           _controller?.listLikePost.add(
             LikeModel(
               id: response.message,
               userId: _controller?.auth.currentUser?.uid,
-              postId: postId,
+              postId: post.id,
               timestamp: DateTime.now().millisecondsSinceEpoch,
             ),
           );
@@ -148,7 +148,14 @@ class _PostScreenState extends State<PostScreen> {
                         // SpacingBox(h: 8),
                         // _buildNewFeed(context),
                         SpacingBox(h: 8),
-                        _buildListPost()
+                        _controller?.listPostModel == null ||
+                                _controller?.listPostModel.length == 0
+                            ? Center(
+                                child: Text(
+                                'Không có bài viết nào!',
+                                style: pt16Regular(context),
+                              ))
+                            : _buildListPost()
                       ],
                     )),
               ),
@@ -231,10 +238,10 @@ class _PostScreenState extends State<PostScreen> {
         physics: NeverScrollableScrollPhysics(),
         children: [
           ListTile(
-            leading: userModel != null
+            leading: userModel != null || userModel?.backgroundImageUrl != ''
                 ? CircleAvatar(
                     backgroundImage: NetworkImage(
-                      userModel.profileImageUrl!,
+                      userModel?.profileImageUrl ?? '',
                     ),
                   )
                 : CircularProgressIndicator(
@@ -357,7 +364,7 @@ class _PostScreenState extends State<PostScreen> {
                                         _isLiked ||
                                         userLikePost == null
                                     ? _unLikePost(userLikePost?.id ?? '')
-                                    : _likePost(model.id!);
+                                    : _likePost(model);
                               });
                               // Thiết lập thời gian chờ 1 giây
                               Future.delayed(Duration(seconds: 1), () {

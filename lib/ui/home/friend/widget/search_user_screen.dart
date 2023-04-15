@@ -138,30 +138,35 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            Row(
-              children: [
-                model.profileImageUrl == null
-                    ? CircleAvatar(radius: Sizes.s24)
-                    : CircleAvatar(
-                        radius: Sizes.s24,
-                        backgroundImage:
-                            NetworkImage(model.profileImageUrl ?? ''),
-                      ),
-                SpacingBox(w: 8),
-                model.userName == null
-                    ? Text(
-                        'Không tên',
-                        style: pt16Regular(context)
-                            .copyWith(fontWeight: FontWeight.w300),
-                      )
-                    : Text(
-                        model.userName!,
-                        style: pt16Regular(context)
-                            .copyWith(fontWeight: FontWeight.w300),
-                      ),
-              ],
+            Expanded(
+              child: Row(
+                children: [
+                  model.profileImageUrl == null || model.profileImageUrl == ''
+                      ? CircleAvatar(radius: Sizes.s24)
+                      : CircleAvatar(
+                          radius: Sizes.s24,
+                          backgroundImage:
+                              NetworkImage(model.profileImageUrl ?? ''),
+                        ),
+                  SpacingBox(w: 8),
+                  model.userName == null
+                      ? Text(
+                          'Không tên',
+                          style: pt16Regular(context)
+                              .copyWith(fontWeight: FontWeight.w300),
+                        )
+                      : Expanded(
+                          child: Text(
+                            model.userName!,
+                            style: pt16Regular(context).copyWith(
+                                fontWeight: FontWeight.w300,
+                                overflow: TextOverflow.ellipsis),
+                          ),
+                        ),
+                ],
+              ),
             ),
-            Spacer(),
+            SpacingBox(w: 8),
             isUserStorage
                 ? Padding(
                     padding: EdgeInsets.only(right: Sizes.s16),

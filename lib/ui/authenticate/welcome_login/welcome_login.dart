@@ -62,50 +62,42 @@ class _WelcomeLoginScreenState extends State<WelcomeLoginScreen> {
                     Column(
                       children: [
                         Text(
-                          S.current.welcomeTo,
+                          'Chào mừng bạn đến với Fafte',
                           style: pt22Bold(context).copyWith(
                             fontSize: Sizes.s30,
                           ),
-                        ),
-                        const SpacingBox(
-                          h: 1,
-                        ),
-                        Text(
-                          S.current.videoSharingApp,
-                          style: pt22Bold(context).copyWith(
-                            fontSize: Sizes.s30,
-                          ),
+                          textAlign: TextAlign.center,
                         ),
                         const SpacingBox(
                           h: 15,
                         ),
-                        Text(
-                          S.current.deliverYourOrderAroundTheWorld,
-                          style: pt16Regular(context).copyWith(
-                            fontSize: Sizes.s18,
-                          ),
-                        ),
-                        const SpacingBox(
-                          h: 1,
-                        ),
-                        Text(
-                          S.current.withoutHesitation,
-                          style: pt16Regular(context).copyWith(
-                            fontSize: Sizes.s18,
-                          ),
-                        ),
+                        // Text(
+                        //   S.current.deliverYourOrderAroundTheWorld,
+                        //   style: pt16Regular(context).copyWith(
+                        //     fontSize: Sizes.s18,
+                        //   ),
+                        // ),
+                        // const SpacingBox(
+                        //   h: 1,
+                        // ),
+                        // Text(
+                        //   S.current.withoutHesitation,
+                        //   style: pt16Regular(context).copyWith(
+                        //     fontSize: Sizes.s18,
+                        //   ),
+                        // ),
                       ],
                     ),
-                    const SpacingBox(
-                      h: 26,
-                    ),
+                    // const SpacingBox(
+                    //   h: 26,
+                    // ),
                     BuildTextLinearButton(
                       onTap: () {
                         navigateTo(const WelcomeV2LoginScreen(
                           isLogin: true,
                         ));
                       },
-                      text: S.current.login,
+                      text: 'Đăng nhập',
                       style: pt16Regular(context).copyWith(
                         fontWeight: FontWeight.w500,
                         fontSize: Sizes.s18,
@@ -121,7 +113,7 @@ class _WelcomeLoginScreenState extends State<WelcomeLoginScreen> {
                           isSignup: true,
                         ));
                       },
-                      text: S.current.register,
+                      text: 'Đăng ký',
                       colors: const [purpleLightGradient, purpleLDarkGradient],
                       style: pt16Regular(context).copyWith(
                         fontWeight: FontWeight.w500,

@@ -202,10 +202,10 @@ class _CommentScreenState extends State<CommentScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          user != null
+          user?.profileImageUrl != null || user?.profileImageUrl != ''
               ? CircleAvatar(
                   backgroundImage: NetworkImage(
-                    user.profileImageUrl!,
+                    user?.profileImageUrl ?? '',
                   ),
                 )
               : CircularProgressIndicator(

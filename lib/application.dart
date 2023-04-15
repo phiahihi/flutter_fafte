@@ -28,7 +28,7 @@ class FafteFlutter extends StatefulWidget {
 }
 
 class _FafteFlutterState extends State<FafteFlutter> {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   @override
   void initState() {

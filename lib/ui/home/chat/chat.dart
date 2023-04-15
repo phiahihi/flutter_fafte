@@ -42,40 +42,40 @@ class _ChatScreenState extends State<ChatScreen> {
       body: SafeArea(
           child: Column(
         children: [
-          _buildSearchUser(context),
+          // _buildSearchUser(context),
           Expanded(
             child: Container(
               color: whiteAccent,
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SpacingBox(
-                      h: 15,
-                    ),
+                    // SpacingBox(
+                    //   h: 15,
+                    // ),
+                    // SpacingBox(
+                    //   h: 13,
+                    // ),
+                    // SizedBox(
+                    //   height: Sizes.s50,
+                    //   child: ListView(
+                    //     shrinkWrap: true,
+                    //     scrollDirection: Axis.horizontal,
+                    //     physics: BouncingScrollPhysics(),
+                    //     children: [
+                    //       _buildActive(),
+                    //       _buildActive(),
+                    //       _buildActive(),
+                    //       _buildActive(),
+                    //       _buildActive(),
+                    //       _buildActive(),
+                    //       _buildActive(),
+                    //     ],
+                    //   ),
+                    // ),
                     SpacingBox(
                       h: 13,
                     ),
-                    SizedBox(
-                      height: Sizes.s50,
-                      child: ListView(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        physics: BouncingScrollPhysics(),
-                        children: [
-                          _buildActive(),
-                          _buildActive(),
-                          _buildActive(),
-                          _buildActive(),
-                          _buildActive(),
-                          _buildActive(),
-                          _buildActive(),
-                        ],
-                      ),
-                    ),
-                    SpacingBox(
-                      h: 13,
-                    ),
-                    _buildListBoxChat(),
+                    if (_chatController?.listBoxId != []) _buildListBoxChat(),
                   ],
                 ),
               ),
@@ -93,8 +93,8 @@ class _ChatScreenState extends State<ChatScreen> {
       physics: ScrollPhysics(),
       itemBuilder: (context, index) {
         return FutureBuilder<ItemMessageModel>(
-          future: _chatController!
-              .getItemMessage(_chatController!.listBoxId[index]),
+          future: _chatController
+              ?.getItemMessage(_chatController!.listBoxId[index]),
           builder: (context, snapshot) {
             final itemMessageModel = snapshot.data;
             return _buildItemMessage(
@@ -162,7 +162,8 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Row(
               children: [
-                if (itemMessageModel?.userModel?.profileImageUrl == null)
+                if (itemMessageModel?.userModel?.profileImageUrl == null ||
+                    itemMessageModel?.userModel?.profileImageUrl == '')
                   ClipRRect(
                     borderRadius: BorderRadius.circular(Sizes.s50),
                     child: Image.asset(
@@ -207,14 +208,18 @@ class _ChatScreenState extends State<ChatScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              itemMessageModel.userModel!.userName!,
-                              style: pt14Bold(context).copyWith(
-                                  fontSize: Sizes.s13, color: textColor2),
+                            Expanded(
+                              child: Text(
+                                itemMessageModel.userModel?.userName ?? '',
+                                style: pt14Bold(context).copyWith(
+                                    fontSize: Sizes.s13,
+                                    color: textColor2,
+                                    overflow: TextOverflow.ellipsis),
+                              ),
                             ),
                             Text(
                               timestampToDate(
-                                      itemMessageModel.messageModel!.timestamp)
+                                      itemMessageModel.messageModel?.timestamp)
                                   .timeAgoEnShort(),
                               style: pt12Regular(context)
                                   .copyWith(color: textColor),
@@ -236,7 +241,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             Expanded(
                               child: Row(
                                 children: [
-                                  if (itemMessageModel.messageModel!.senderId ==
+                                  if (itemMessageModel.messageModel?.senderId ==
                                       FirebaseAuth.instance.currentUser!.uid)
                                     Text(
                                       'Bạn: ',
@@ -246,7 +251,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                   Expanded(
                                     child: Text(
                                       itemMessageModel
-                                          .messageModel!.messageText!,
+                                              .messageModel?.messageText! ??
+                                          '',
                                       style: pt14Regular(context)
                                           .copyWith(fontSize: Sizes.s13),
                                       overflow: TextOverflow.ellipsis,

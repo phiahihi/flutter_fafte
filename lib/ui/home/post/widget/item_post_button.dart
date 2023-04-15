@@ -197,10 +197,12 @@ class _ItemPostButtonState extends State<ItemPostButton> {
                 ));
               },
               child: CircleAvatar(
-                backgroundImage: _userController.userModel?.profileImageUrl !=
-                        null
-                    ? NetworkImage(_userController.userModel!.profileImageUrl!)
-                    : null,
+                backgroundImage:
+                    _userController.userModel?.profileImageUrl != null ||
+                            _userController.userModel?.profileImageUrl != ''
+                        ? NetworkImage(
+                            _userController.userModel?.profileImageUrl ?? '')
+                        : null,
               ),
             ),
             SpacingBox(

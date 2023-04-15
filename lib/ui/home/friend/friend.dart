@@ -29,7 +29,6 @@ class _FriendScreenState extends State<FriendScreen> {
     }
   }
 
-
   void _rejectInvitation(String userId) async {
     _controller!.rejectInvitation(userId).then((response) async {
       if (response.success) {
@@ -248,9 +247,12 @@ class _FriendScreenState extends State<FriendScreen> {
             friendModel != null
                 ? CircleAvatar(
                     radius: Sizes.s40,
-                    backgroundImage: NetworkImage(
-                      friendModel.profileImageUrl!,
-                    ),
+                    backgroundImage: friendModel.profileImageUrl == null ||
+                            friendModel.profileImageUrl == ''
+                        ? null
+                        : NetworkImage(
+                            friendModel.profileImageUrl!,
+                          ),
                   )
                 : CircularProgressIndicator(
                     color: splashColor,
@@ -265,10 +267,14 @@ class _FriendScreenState extends State<FriendScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          friendModel.userName!,
-                          style: pt16Regular(context),
+                        Expanded(
+                          child: Text(
+                            friendModel.userName!,
+                            style: pt16Regular(context)
+                                .copyWith(overflow: TextOverflow.ellipsis),
+                          ),
                         ),
+                        SpacingBox(w: 16),
                         Text(
                           timestampToDate(invite.timestamp).timeAgoEnShort(),
                           style: pt14Regular(context),

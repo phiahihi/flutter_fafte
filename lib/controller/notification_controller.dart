@@ -62,7 +62,7 @@ class NotificationController extends ChangeNotifier {
       final notisFirebase = notifications.docs.map((e) => e.data()).toList();
       listNotificationModel =
           notisFirebase.map((e) => NotificationModel.fromJson(e)).toList();
-
+      notifyListeners();
       return BaseResponse(
         message: 'Success',
         success: true,

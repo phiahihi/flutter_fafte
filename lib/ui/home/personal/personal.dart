@@ -1,11 +1,18 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fafte/controller/friend_controller.dart';
+import 'package:fafte/controller/notification_controller.dart';
 import 'package:fafte/controller/post_controller.dart';
 import 'package:fafte/controller/user_controller.dart';
+import 'package:fafte/models/comment.dart';
+import 'package:fafte/models/like.dart';
 import 'package:fafte/models/post.dart';
 import 'package:fafte/models/user.dart';
 import 'package:fafte/theme/assets.dart';
 import 'package:fafte/ui/home/chat/widget/chat_screen_content.dart';
+import 'package:fafte/ui/home/post/widget/comment_screen.dart';
+import 'package:fafte/ui/home/post/widget/detail_post_screen.dart';
 import 'package:fafte/ui/home/post/widget/item_post_button.dart';
 import 'package:fafte/ui/widget/button/back_button.dart';
 import 'package:fafte/ui/widget/button/text_button.dart';
@@ -15,6 +22,7 @@ import 'package:fafte/utils/date_time_utils.dart';
 import 'package:fafte/utils/export.dart';
 import 'package:fafte/utils/snackbars_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class PersonalScreen extends StatefulWidget {
@@ -34,6 +42,90 @@ class _PersonalScreenState extends State<PersonalScreen> {
   String? _status;
   String? _receiverId;
   String? _inviteId;
+
+  XFile? _pickedBackgroundImage;
+  XFile? _pickedAvatarImage;
+
+  bool _isLikePressed = false;
+  NotificationController _notificationController =
+      NotificationController.instance;
+  List<LikeModel>? getUserLikedPost(String postId) {
+    return _controller!.listLikePost
+        .where((element) => element.postId == postId)
+        .toList();
+  }
+
+  List<CommentModel>? getUserCommentPost(String postId) {
+    return _controller!.listCommentPost
+        .where((element) => element.postId == postId)
+        .toList();
+  }
+
+  void _likePost(PostModel post) async {
+    final user = await _controller?.getPoster(post.userId!);
+    _controller!.likePost(post.id!).then((response) async {
+      if (response.success) {
+        _notificationController.sendNotification(
+          'Thích',
+          'Có người đã thích bài viết của bạn',
+          user?.fcmToken ?? '',
+        );
+        setState(() {
+          _controller?.listLikePost.add(
+            LikeModel(
+              id: response.message,
+              userId: _controller?.auth.currentUser?.uid,
+              postId: post.id,
+              timestamp: DateTime.now().millisecondsSinceEpoch,
+            ),
+          );
+        });
+      }
+    }).catchError((error) {
+      ContextExtensions(context).showSnackBar(error);
+    });
+  }
+
+  void _unLikePost(userLikePostId) async {
+    _controller!.unLikePost(userLikePostId).then((response) async {
+      if (response.success) {
+        setState(() {
+          _controller?.listLikePost.removeWhere(
+            (element) =>
+                element.userId == _controller?.auth.currentUser?.uid &&
+                element.id == userLikePostId,
+          );
+        });
+      }
+    }).catchError((error) {
+      ContextExtensions(context).showSnackBar(error);
+    });
+  }
+
+  Future<void> _pickBackgroundImage() async {
+    final imageFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    setState(() {
+      _pickedBackgroundImage = imageFile;
+    });
+
+    if (_pickedBackgroundImage != null) {
+      userModel.updateBackgroundImage(
+          widget.model!.id ?? '', _pickedBackgroundImage?.path);
+    }
+  }
+
+  Future<void> _pickAvatarImage() async {
+    final imageFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    setState(() {
+      _pickedAvatarImage = imageFile;
+    });
+    if (_pickedAvatarImage != null) {
+      userModel.updateAvatarImage(
+          widget.model!.id ?? '', _pickedAvatarImage?.path);
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -164,7 +256,14 @@ class _PersonalScreenState extends State<PersonalScreen> {
                                       SpacingBox(h: 8),
                                     ],
                                   ),
-                                _buildListPost()
+                                _controller?.listPostByIdModel.length == 0
+                                    ? Center(
+                                        child: Text(
+                                          'Không có bài viết nào !',
+                                          style: pt16Regular(context),
+                                        ),
+                                      )
+                                    : _buildListPost()
                               ],
                             ),
                           ),
@@ -267,17 +366,46 @@ class _PersonalScreenState extends State<PersonalScreen> {
               children: [
                 Column(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(Sizes.s6),
-                      child: SizedBox(
-                        height: Sizes.s200,
-                        width: deviceWidth(context),
-                        child: CachedNetworkImage(
-                          imageUrl: widget.model!.profileImageUrl ??
-                              userModel.userModel!.profileImageUrl!,
-                          fit: BoxFit.cover,
+                    Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(Sizes.s6),
+                          child: SizedBox(
+                            height: Sizes.s200,
+                            width: deviceWidth(context),
+                            child: _pickedBackgroundImage != null
+                                ? Image.file(
+                                    File(_pickedBackgroundImage!.path),
+                                    fit: BoxFit.cover,
+                                  )
+                                : CachedNetworkImage(
+                                    imageUrl:
+                                        widget.model!.backgroundImageUrl ??
+                                            userModel.userModel!
+                                                .backgroundImageUrl ??
+                                            '',
+                                    fit: BoxFit.cover,
+                                    errorWidget: (context, url, error) =>
+                                        Container(
+                                      color: greyAccent.withOpacity(0.5),
+                                    ),
+                                  ),
+                          ),
                         ),
-                      ),
+                        Positioned(
+                          bottom: Sizes.s8,
+                          right: Sizes.s8,
+                          child: GestureDetector(
+                            onTap: () => _pickBackgroundImage(),
+                            child: CircleAvatar(
+                              radius: Sizes.s15,
+                              backgroundColor: white,
+                              child: Icon(Icons.camera_alt_outlined,
+                                  color: splashColor),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                     SizedBox(
                       height: Sizes.s60,
@@ -296,11 +424,41 @@ class _PersonalScreenState extends State<PersonalScreen> {
                       Positioned(
                         top: Sizes.s4,
                         left: Sizes.s4,
-                        child: CircleAvatar(
-                          radius: Sizes.s60,
-                          backgroundImage: NetworkImage(
-                              widget.model?.profileImageUrl ??
-                                  userModel.userModel!.profileImageUrl!),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(Sizes.s60),
+                          child: _pickedAvatarImage != null
+                              ? Image.file(
+                                  File(_pickedAvatarImage!.path),
+                                  fit: BoxFit.cover,
+                                  width: Sizes.s120,
+                                )
+                              : CachedNetworkImage(
+                                  imageUrl: widget.model?.profileImageUrl ??
+                                      userModel.userModel?.profileImageUrl ??
+                                      '',
+                                  width: Sizes.s120,
+                                  height: Sizes.s120,
+                                  fit: BoxFit.cover,
+                                  errorWidget: (context, url, error) =>
+                                      Container(
+                                    width: Sizes.s120,
+                                    height: Sizes.s120,
+                                    color: splashColor.withOpacity(0.5),
+                                  ),
+                                ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: Sizes.s4,
+                        right: Sizes.s4,
+                        child: GestureDetector(
+                          onTap: () => _pickAvatarImage(),
+                          child: CircleAvatar(
+                            radius: Sizes.s15,
+                            backgroundColor: white,
+                            child: Icon(Icons.camera_alt_outlined,
+                                color: splashColor),
+                          ),
                         ),
                       ),
                     ],
@@ -321,13 +479,13 @@ class _PersonalScreenState extends State<PersonalScreen> {
                 SpacingBox(
                   h: 8,
                 ),
-                InkWell(
-                  onTap: () {},
-                  child: Text(
-                    widget.model?.userName ?? userModel.userModel!.userName!,
-                    style: pt16Regular(context),
-                  ),
-                ),
+                // InkWell(
+                //   onTap: () {},
+                //   child: Text(
+                //     widget.model?.userName ?? userModel.userModel!.userName!,
+                //     style: pt16Regular(context),
+                //   ),
+                // ),
                 SpacingBox(
                   h: 8,
                 ),
@@ -387,6 +545,16 @@ class _PersonalScreenState extends State<PersonalScreen> {
   }
 
   Widget _buildItemPost(PostModel model, UserModel? userModel) {
+    bool _isLiked = false;
+    final listLiked = getUserLikedPost(model.id!);
+    bool? isLiked = listLiked?.any(
+        (element) => element.userId == _controller?.auth.currentUser?.uid);
+    final userLikePost = listLiked?.firstWhere(
+      (element) => element.userId == _controller?.auth.currentUser?.uid,
+      orElse: () => LikeModel(),
+    );
+    final listComment = getUserCommentPost(model.id!);
+
     return Container(
       color: white,
       child: ListView(
@@ -394,18 +562,23 @@ class _PersonalScreenState extends State<PersonalScreen> {
         physics: NeverScrollableScrollPhysics(),
         children: [
           ListTile(
-            leading: userModel != null
+            leading: userModel != null || userModel?.backgroundImageUrl != ''
                 ? CircleAvatar(
                     backgroundImage: NetworkImage(
-                      userModel.profileImageUrl!,
+                      userModel?.profileImageUrl ?? '',
                     ),
                   )
                 : CircularProgressIndicator(
                     color: splashColor,
                   ),
-            title: Text(
-              userModel?.userName ?? '',
-              style: pt16Regular(context),
+            title: InkWell(
+              onTap: () {
+                navigateTo(PersonalScreen(model: userModel));
+              },
+              child: Text(
+                userModel?.userName ?? '',
+                style: pt16Regular(context),
+              ),
             ),
             subtitle: Text(
               timestampToDate(model.timeStamp).timeAgoEnShort(),
@@ -413,7 +586,12 @@ class _PersonalScreenState extends State<PersonalScreen> {
             ),
             trailing: Icon(Icons.more_vert),
             onTap: () {
-              print('sss');
+              navigateTo(
+                DetailPostScreen(
+                  model: model,
+                  userModel: userModel,
+                ),
+              );
             },
           ),
           if (model.postImageUrl != '')
@@ -427,18 +605,71 @@ class _PersonalScreenState extends State<PersonalScreen> {
               ),
             ),
           Padding(
-            padding: EdgeInsets.all(Sizes.s16),
+            padding: EdgeInsets.symmetric(vertical: Sizes.s16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  model.postText!,
-                  style: pt14Regular(context)
-                      .copyWith(overflow: TextOverflow.ellipsis),
-                  maxLines: 3,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
+                  child: Text(
+                    model.postText!,
+                    style: pt14Regular(context)
+                        .copyWith(overflow: TextOverflow.ellipsis),
+                    maxLines: 3,
+                  ),
                 ),
                 SizedBox(height: Sizes.s16),
-                Divider(),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
+                  child: Divider(height: Sizes.s1),
+                ),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                      splashColor: greyAccent.withOpacity(0.01),
+                      onTap: () => showModalBottomSheet(
+                            context: context,
+                            useSafeArea: true,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => CommentScreen(
+                              postId: model.id ?? '',
+                              listComment: listComment ?? [],
+                            ),
+                          ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: Sizes.s12, horizontal: Sizes.s16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.thumb_up,
+                                  color: splashColor,
+                                  size: Sizes.s18,
+                                ),
+                                SizedBox(width: Sizes.s8),
+                                Text(
+                                  listLiked?.length.toString() ?? '0',
+                                  style: pt14Regular(context),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              (listComment?.length.toString() ?? '0') +
+                                  ' bình luận',
+                              style: pt14Regular(context),
+                            ),
+                          ],
+                        ),
+                      )),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
+                  child: Divider(height: Sizes.s1),
+                ),
                 SizedBox(
                   height: Sizes.s56,
                   width: deviceWidth(context),
@@ -446,17 +677,43 @@ class _PersonalScreenState extends State<PersonalScreen> {
                     children: [
                       Expanded(
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () async {
+                            if (!_isLikePressed) {
+                              // Thực hiện chức năng like
+                              setState(() {
+                                _isLikePressed = true;
+
+                                isLiked == null ||
+                                        isLiked ||
+                                        _isLiked ||
+                                        userLikePost == null
+                                    ? _unLikePost(userLikePost?.id ?? '')
+                                    : _likePost(model);
+                              });
+                              // Thiết lập thời gian chờ 1 giây
+                              Future.delayed(Duration(seconds: 1), () {
+                                _isLikePressed = false;
+                              });
+                            }
+                          },
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: Sizes.s8),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.thumb_up),
+                                Icon(Icons.thumb_up,
+                                    color:
+                                        isLiked == null || isLiked || _isLiked
+                                            ? splashColor
+                                            : textColor),
                                 SizedBox(width: Sizes.s8),
                                 Text(
-                                  'Like',
-                                  style: pt14Bold(context),
+                                  'Thích',
+                                  style: pt14Bold(context).copyWith(
+                                      color:
+                                          isLiked == null || isLiked || _isLiked
+                                              ? splashColor
+                                              : textColor),
                                 ),
                               ],
                             ),
@@ -464,16 +721,29 @@ class _PersonalScreenState extends State<PersonalScreen> {
                         ),
                       ),
                       Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.message),
-                            SizedBox(width: Sizes.s8),
-                            Text(
-                              'Comment',
-                              style: pt14Bold(context),
+                        child: InkWell(
+                          onTap: () => showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            useSafeArea: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => CommentScreen(
+                              postId: model.id ?? '',
+                              listComment: listComment ?? [],
                             ),
-                          ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.message, color: textColor),
+                              SizedBox(width: Sizes.s8),
+                              Text(
+                                'Bình luận',
+                                style: pt14Bold(context)
+                                    .copyWith(color: textColor),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],

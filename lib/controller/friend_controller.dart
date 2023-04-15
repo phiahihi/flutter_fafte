@@ -173,8 +173,6 @@ class FriendController extends ChangeNotifier {
 
   Future<BaseResponse> acceptInvitation(String invitation) async {
     try {
-
-      
       await firestore.collection('invitations').doc(invitation).update({
         'status': 'accepted',
         'timestamp': DateTime.now().millisecondsSinceEpoch
