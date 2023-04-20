@@ -47,7 +47,6 @@ class AuthController extends ChangeNotifier {
           fcmToken: fcmToken ?? '',
         ),
       );
-      await signIn(email, password);
       return BaseResponse(
         message: 'Success',
         success: true,

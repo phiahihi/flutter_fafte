@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:fafte/controller/auth_controller.dart';
+import 'package:fafte/ui/authenticate/welcome_login/welcome_login.dart';
 import 'package:fafte/ui/authenticate/welcome_v2_login/welcome_v2_login.dart';
 import 'package:fafte/ui/home/main_screen/main_screen.dart';
 import 'package:fafte/utils/string_utils.dart';
@@ -274,7 +275,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                           setState(() {
                                             isLoading = false;
                                           });
-                                          navigateTo(const MainScreen(),
+                                          navigateTo(const WelcomeLoginScreen(),
                                               clearStack: true);
                                         } else {
                                           setState(() {
