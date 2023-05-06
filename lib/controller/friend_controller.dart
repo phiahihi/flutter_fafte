@@ -71,7 +71,7 @@ class FriendController extends ChangeNotifier {
 
       list10Invite =
           invitation.docs.map((e) => FriendModel.fromJson(e.data())).toList();
-
+      notifyListeners();
       return BaseResponse(
         message: 'Success',
         success: true,
@@ -115,22 +115,34 @@ class FriendController extends ChangeNotifier {
 
   Future<BaseResponse> sendInvitation(String receiverId) async {
     try {
-      final currentUser = auth.currentUser;
-      final invitation = await FirebaseFirestore.instance
-          .collection('invitations')
-          .add(<String, dynamic>{});
-      await firestore.collection('invitations').doc(invitation.id).set({
-        'id': invitation.id,
-        'senderId': currentUser?.uid,
-        'receiverId': receiverId,
-        'status': 'pending',
-        'timestamp': DateTime.now().millisecondsSinceEpoch
-      });
+      await getAllInvitation();
+      if (listAllFriend.any((element) =>
+          element.receiverId == receiverId ||
+          element.receiverId == auth.currentUser!.uid &&
+              element.senderId == auth.currentUser?.uid ||
+          element.senderId == receiverId)) {
+        return BaseResponse(
+          message: 'Không thể gửi lời mời kết bạn',
+          success: true,
+        );
+      } else {
+        final currentUser = auth.currentUser;
+        final invitation = await FirebaseFirestore.instance
+            .collection('invitations')
+            .add(<String, dynamic>{});
+        await firestore.collection('invitations').doc(invitation.id).set({
+          'id': invitation.id,
+          'senderId': currentUser?.uid,
+          'receiverId': receiverId,
+          'status': 'pending',
+          'timestamp': DateTime.now().millisecondsSinceEpoch
+        });
 
-      return BaseResponse(
-        message: 'Đã gửi lời mời kết bạn',
-        success: true,
-      );
+        return BaseResponse(
+          message: 'Đã gửi lời mời kết bạn',
+          success: true,
+        );
+      }
     } catch (error) {
       print(error);
       return BaseResponse(
@@ -200,6 +212,8 @@ class FriendController extends ChangeNotifier {
 
       await firestore.collection('invitations').doc(invatationId).delete();
 
+      await getAllInvitation();
+      notifyListeners();
       return BaseResponse(
         message: 'Đã hủy lời mời kết bạn',
         success: true,

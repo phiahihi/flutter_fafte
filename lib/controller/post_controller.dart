@@ -139,6 +139,14 @@ class PostController extends ChangeNotifier {
     }
   }
 
+  Future deleteCommentPostById(String id) async {
+    try {
+      await FirebaseFirestore.instance.collection('comments').doc(id).delete();
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Future<String> _uploadImage(File pickedImage) async {
     final storageRef = storage
         .ref()

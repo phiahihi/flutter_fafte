@@ -395,7 +395,6 @@ class _DetailPostScreenState extends State<DetailPostScreen> {
                               ?.commentPost(widget.model.id!)
                               .then((response) {
                             if (response.success) {
-                              print('sss');
                               setState(() {
                                 isLoading = false;
                                 _controller?.getAllPostById(widget.model.id!);

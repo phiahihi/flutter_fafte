@@ -96,7 +96,7 @@ class _PostScreenState extends State<PostScreen> {
   }
 
   List<CommentModel>? getUserCommentPost(String postId) {
-    return _controller!.listCommentPost
+    return _controller!.listCommentPostById
         .where((element) => element.postId == postId)
         .toList();
   }
@@ -230,7 +230,7 @@ class _PostScreenState extends State<PostScreen> {
       orElse: () => LikeModel(),
     );
     final listComment = getUserCommentPost(model.id!);
-
+    print('listComment: ${model.id}');
     return Container(
       color: white,
       child: ListView(
@@ -310,7 +310,6 @@ class _PostScreenState extends State<PostScreen> {
                             backgroundColor: Colors.transparent,
                             builder: (context) => CommentScreen(
                               postId: model.id ?? '',
-                              listComment: listComment ?? [],
                             ),
                           ),
                       child: Padding(
@@ -405,7 +404,6 @@ class _PostScreenState extends State<PostScreen> {
                             backgroundColor: Colors.transparent,
                             builder: (context) => CommentScreen(
                               postId: model.id ?? '',
-                              listComment: listComment ?? [],
                             ),
                           ),
                           child: Row(
