@@ -17,11 +17,13 @@ import 'package:fafte/ui/home/post/widget/item_post_button.dart';
 import 'package:fafte/ui/widget/button/back_button.dart';
 import 'package:fafte/ui/widget/button/text_button.dart';
 import 'package:fafte/ui/widget/container/spacing_box.dart';
+import 'package:fafte/ui/widget/popup/show_sheet.dart';
 import 'package:fafte/ui/widget/skeleton/post_screen_skeleton.dart';
 import 'package:fafte/utils/date_time_utils.dart';
 import 'package:fafte/utils/export.dart';
 import 'package:fafte/utils/snackbars_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -34,6 +36,8 @@ class PersonalScreen extends StatefulWidget {
 
 class _PersonalScreenState extends State<PersonalScreen> {
   bool isLoading = false;
+  bool isLoadingInvite = false;
+
   bool isInvited = false;
   FriendController _friendController = FriendController.instance;
   PostController? _controller;
@@ -168,8 +172,8 @@ class _PersonalScreenState extends State<PersonalScreen> {
     });
   }
 
-  _rejectInvitation() {
-    _friendController
+  Future _rejectInvitation() async {
+    await _friendController
         .rejectInvitation(widget.model?.id ?? userModel.userModel!.id!)
         .then((response) {
       if (response.success) {
@@ -281,8 +285,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
       color: white,
       child: Column(
         children: [
-          isInvited ||
-                  _status == 'pending' && _receiverId == auth.currentUser!.uid
+          _status == 'pending' && _receiverId == auth.currentUser!.uid
               ? Row(
                   children: [
                     Expanded(
@@ -316,7 +319,10 @@ class _PersonalScreenState extends State<PersonalScreen> {
                           children: [
                             Expanded(
                               child: BuildTextLinearButton(
-                                onTap: () {},
+                                onTap: () async {
+                                  await _showOptions();
+                                  setState(() {});
+                                },
                                 colors: [blueLightGradient, blueDarkGradient],
                                 text: 'Bạn bè',
                                 borderRadius: BorderRadius.circular(Sizes.s8),
@@ -634,7 +640,6 @@ class _PersonalScreenState extends State<PersonalScreen> {
                             backgroundColor: Colors.transparent,
                             builder: (context) => CommentScreen(
                               postId: model.id ?? '',
-                              listComment: listComment ?? [],
                             ),
                           ),
                       child: Padding(
@@ -729,7 +734,6 @@ class _PersonalScreenState extends State<PersonalScreen> {
                             backgroundColor: Colors.transparent,
                             builder: (context) => CommentScreen(
                               postId: model.id ?? '',
-                              listComment: listComment ?? [],
                             ),
                           ),
                           child: Row(
@@ -812,5 +816,55 @@ class _PersonalScreenState extends State<PersonalScreen> {
         )
       ],
     );
+  }
+
+  Future _showOptions() async {
+    showSheet(context,
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: Sizes.s32),
+          child: InkWell(
+            onTap: () async {
+              if (!isLoadingInvite) {
+                setState(() {
+                  isLoadingInvite = true;
+                });
+                await _rejectInvitation();
+                await _friendController
+                    .getStatusInvite(
+                        widget.model?.id ?? userModel.userModel!.id!)
+                    .then((value) {
+                  setState(() {
+                    _status = value.status;
+                    _receiverId = value.receiverId;
+                    _inviteId = value.id;
+
+                    print(value.toJson());
+                  });
+                });
+                setState(() {
+                  isLoadingInvite = false;
+                });
+                Navigator.pop(context);
+              }
+            },
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: Sizes.s16, vertical: Sizes.s8),
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    Assets.userMinus,
+                    width: Sizes.s24,
+                    height: Sizes.s24,
+                  ),
+                  SpacingBox(w: 16),
+                  Expanded(
+                    child: Text('Hủy kết bạn', style: pt16Bold(context)),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ));
   }
 }

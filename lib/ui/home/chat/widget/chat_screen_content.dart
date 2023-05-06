@@ -3,6 +3,8 @@ import 'package:fafte/controller/chat_controller.dart';
 import 'package:fafte/models/user.dart';
 import 'package:fafte/utils/export.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:provider/provider.dart';
 
 class ChatScreenContent extends StatefulWidget {
@@ -19,8 +21,8 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
   void didChangeDependencies() {
     if (controller == null) {
       controller = Provider.of<ChatController>(context);
-      controller!.getMessages(widget.friend.id!);
-      controller?.userTypingStream(widget.friend.id!);
+      controller!.getMessages(widget.friend.id ?? '');
+      controller?.userTypingStream(widget.friend.id ?? '');
     }
 
     super.didChangeDependencies();
@@ -33,15 +35,22 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
           title: Text(widget.friend.userName ?? ''),
           centerTitle: true,
           backgroundColor: splashColor,
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.phone),
-            )
-          ],
+          // actions: [
+          //   IconButton(
+          //     onPressed: () {},
+          //     icon: Icon(Icons.phone),
+          //   )
+          // ],
+          automaticallyImplyLeading: false,
+          leading: BackButton(
+            onPressed: () {
+              Get.back();
+              controller?.setUserNotTyping(widget.friend.id!);
+            },
+          ),
         ),
         body: StreamBuilder(
-            stream: controller?.userTypingStream(widget.friend.id!),
+            stream: controller?.userTypingStream(widget.friend.id ?? ''),
             builder: (context, snapshot) {
               return DashChat(
                 typingUsers: snapshot.data == null ? null : [snapshot.data!],

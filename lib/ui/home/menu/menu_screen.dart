@@ -67,6 +67,7 @@ class _MenuScreenState extends State<MenuScreen> {
       backgroundColor: whiteAccent,
       body: SafeArea(
           child: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
           child: Column(

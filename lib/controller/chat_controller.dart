@@ -39,12 +39,13 @@ class ChatController extends ChangeNotifier {
   }
 
   void sendMessage(String messageText, String receiverId) {
-    String conversationId = generateConversationId(senderId, receiverId);
+    String conversationId = generateConversationId(
+        FirebaseAuth.instance.currentUser!.uid, receiverId);
     DatabaseReference conversationRef = messagesRef.child(conversationId);
     DatabaseReference newMessageRef = conversationRef.push();
     newMessageRef.set({
       "id": conversationId,
-      "senderId": senderId,
+      "senderId": FirebaseAuth.instance.currentUser!.uid,
       "receiverId": receiverId,
       "messageText": messageText,
       "timestamp": DateTime.now().millisecondsSinceEpoch,
@@ -53,7 +54,8 @@ class ChatController extends ChangeNotifier {
   }
 
   void getMessages(String receiverId) {
-    String conversationId = generateConversationId(senderId, receiverId);
+    String conversationId = generateConversationId(
+        FirebaseAuth.instance.currentUser!.uid, receiverId);
     final _messagesRef = messagesRef.child(conversationId);
     messages = [];
     _messagesRef.onValue.listen((event) async {
@@ -89,7 +91,14 @@ class ChatController extends ChangeNotifier {
     try {
       final _messagesRef = await messagesRef.get();
       listBoxId = _messagesRef.children.map((e) => e.key.toString()).toList();
-
+      if (listBoxId.any((element) =>
+          element.contains(FirebaseAuth.instance.currentUser!.uid))) {
+        listBoxId.removeWhere((element) =>
+            !element.contains(FirebaseAuth.instance.currentUser!.uid));
+      } else {
+        listBoxId = [];
+      }
+      notifyListeners();
       return BaseResponse(
         message: 'Success',
         success: true,
@@ -107,19 +116,24 @@ class ChatController extends ChangeNotifier {
       final itemMessageModel = ItemMessageModel();
       var messageModel = MessageModel();
       var userModel = UserModel();
+      String userId = "";
       List<String> parts = conversationId.split("-");
-      String userId = parts[1] == FirebaseAuth.instance.currentUser!.uid
-          ? parts[0]
-          : parts[1];
-      // Execute the futures.
-      await Future.wait([
-        getLastMessage(conversationId).then((value) => messageModel = value),
-        post.getPoster(userId).then((value) => userModel = value),
-      ]);
 
-      // Save the data, then return it.
-      itemMessageModel.messageModel = messageModel;
-      itemMessageModel.userModel = userModel;
+      if (conversationId.contains(FirebaseAuth.instance.currentUser!.uid)) {
+        userId = parts[1] == FirebaseAuth.instance.currentUser!.uid
+            ? parts[0]
+            : parts[1];
+        // Execute the futures.
+        await Future.wait([
+          getLastMessage(conversationId).then((value) => messageModel = value),
+          post.getPoster(userId).then((value) => userModel = value),
+        ]);
+
+        // Save the data, then return it.
+        itemMessageModel.messageModel = messageModel;
+        itemMessageModel.userModel = userModel;
+      }
+
       return itemMessageModel;
     } catch (e) {
       print(e.toString());
@@ -146,12 +160,15 @@ class ChatController extends ChangeNotifier {
 
   // Set the typing field for the specified user to true
   void setUserTyping(String friendId) {
-    String conversationId = generateConversationId(senderId, friendId);
-    final _typingRef = typingRef.child(conversationId).child(senderId);
+    String conversationId = generateConversationId(
+        FirebaseAuth.instance.currentUser!.uid, friendId);
+    final _typingRef = typingRef
+        .child(conversationId)
+        .child(FirebaseAuth.instance.currentUser!.uid);
 
     _typingRef.push();
     _typingRef.set({
-      "userTyping": senderId,
+      "userTyping": FirebaseAuth.instance.currentUser!.uid,
       "typing": true,
       "timestamp": DateTime.now().millisecondsSinceEpoch,
     });
@@ -159,12 +176,13 @@ class ChatController extends ChangeNotifier {
 
   // Stream that listens for changes in the typing field for the specified user
   Stream<ChatUser?> userTypingStream(String friendId) {
-    String conversationId = generateConversationId(senderId, friendId);
+    String conversationId = generateConversationId(
+        FirebaseAuth.instance.currentUser!.uid, friendId);
     final _typingRef = typingRef.child(conversationId).child(friendId);
     return _typingRef.onValue.map((event) {
       if (event.snapshot.value != null) {
         if (jsonDecode(jsonEncode(event.snapshot.value))['userTyping'] ==
-            senderId) {
+            FirebaseAuth.instance.currentUser!.uid) {
           return null;
         }
         return ChatUser(
@@ -177,8 +195,11 @@ class ChatController extends ChangeNotifier {
 
   // Set the typing field for the specified user to false
   void setUserNotTyping(String friendId) {
-    String conversationId = generateConversationId(senderId, friendId);
-    final _typingRef = typingRef.child(conversationId).child(senderId);
+    String conversationId = generateConversationId(
+        FirebaseAuth.instance.currentUser!.uid, friendId);
+    final _typingRef = typingRef
+        .child(conversationId)
+        .child(FirebaseAuth.instance.currentUser!.uid);
     _typingRef.remove();
   }
 

@@ -79,7 +79,7 @@ class _ItemPostButtonState extends State<ItemPostButton> {
                                   setState(() {
                                     isLoading = true;
                                   });
-                                  _controller.sendPost().then((response) {
+                                  _controller.sendPost().then((response) async {
                                     if (response.success) {
                                       print(response.success);
                                       setState(() {
@@ -87,6 +87,9 @@ class _ItemPostButtonState extends State<ItemPostButton> {
                                       });
 
                                       _controller.clear();
+                                      await _controller.getAllPost();
+                                      await _controller.getLikePost();
+                                      setState(() {});
                                       Navigator.pop(context);
                                     } else {
                                       print(response.message);

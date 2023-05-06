@@ -39,4 +39,5 @@ class Assets {
   static const String chevronDown = '${prefix}chevronDown.svg';
   static const String messageCircle = '${prefix}messageCircle.svg';
   static const String repeat = '${prefix}repeat.svg';
+  static const String userMinus = '${prefix}userMinus.svg';
 }

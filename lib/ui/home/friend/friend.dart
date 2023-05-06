@@ -1,5 +1,6 @@
 import 'package:fafte/controller/friend_controller.dart';
 import 'package:fafte/ui/home/friend/widget/search_user_screen.dart';
+import 'package:fafte/ui/widget/popup/show_sheet.dart';
 import 'package:fafte/utils/snackbars_utils.dart';
 import 'package:fafte/models/friend.dart';
 import 'package:fafte/models/user.dart';
@@ -358,4 +359,5 @@ class _FriendScreenState extends State<FriendScreen> {
       ),
     );
   }
+
 }

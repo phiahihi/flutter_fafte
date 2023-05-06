@@ -54,7 +54,6 @@ class _MainScreenState extends State<MainScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (userController == null) {
-      print('ss');
       UserController.instance.getUser();
     }
   }

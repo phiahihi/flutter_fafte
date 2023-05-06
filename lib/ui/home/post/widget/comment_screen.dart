@@ -5,13 +5,13 @@ import 'package:fafte/ui/widget/container/spacing_box.dart';
 import 'package:fafte/ui/widget/textfield/textfield.dart';
 import 'package:fafte/utils/date_time_utils.dart';
 import 'package:fafte/utils/export.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:provider/provider.dart';
 
 class CommentScreen extends StatefulWidget {
   final String postId;
-  final List<CommentModel> listComment;
-  const CommentScreen(
-      {super.key, required this.postId, required this.listComment});
+  const CommentScreen({super.key, required this.postId});
 
   @override
   State<CommentScreen> createState() => _CommentScreenState();
@@ -51,13 +51,14 @@ class _CommentScreenState extends State<CommentScreen> {
                         child: Row(
                           children: [
                             Spacer(),
-                            if (widget.listComment.length <= 0)
+                            if (controller!.listCommentPostById.length <= 0)
                               Text(
                                 'Bình luận',
                                 style: pt16Bold(context),
                               )
                             else
-                              Text('Có ${widget.listComment.length} bình luận',
+                              Text(
+                                  'Có ${controller!.listCommentPostById.length} bình luận',
                                   style: pt16Bold(context)),
                             Spacer(),
                             InkWell(
@@ -81,14 +82,15 @@ class _CommentScreenState extends State<CommentScreen> {
                                 padding:
                                     EdgeInsets.symmetric(vertical: Sizes.s16)
                                         .copyWith(bottom: Sizes.s72),
-                                child: widget.listComment.length > 0
-                                    ? _buildListComment()
-                                    : Center(
-                                        child: Text(
-                                          'Không có bình luận nào',
-                                          style: pt16Regular(context),
-                                        ),
-                                      ),
+                                child:
+                                    controller!.listCommentPostById.length > 0
+                                        ? _buildListComment()
+                                        : Center(
+                                            child: Text(
+                                              'Không có bình luận nào',
+                                              style: pt16Regular(context),
+                                            ),
+                                          ),
                               ),
                             ],
                           ),
@@ -123,13 +125,7 @@ class _CommentScreenState extends State<CommentScreen> {
                                   setState(() {
                                     isLoading = true;
                                   });
-                                  widget.listComment.add(CommentModel(
-                                    userId: controller?.auth.currentUser?.uid,
-                                    postId: widget.postId,
-                                    commentText: _commentController.text,
-                                    timestamp:
-                                        DateTime.now().millisecondsSinceEpoch,
-                                  ));
+
                                   _commentController.clear();
 
                                   controller!
@@ -137,10 +133,12 @@ class _CommentScreenState extends State<CommentScreen> {
                                       .then((response) {
                                     if (response.success) {
                                       print(response.success);
+
+                                      controller
+                                          ?.getCommentPostById(widget.postId);
                                       setState(() {
                                         isLoading = false;
                                       });
-                                      controller?.getAllCommentPost();
                                     } else {
                                       setState(() {
                                         isLoading = false;
@@ -185,70 +183,103 @@ class _CommentScreenState extends State<CommentScreen> {
       physics: ScrollPhysics(),
       itemBuilder: (context, index) {
         return FutureBuilder<UserModel>(
-          future: controller?.getPoster(widget.listComment[index].userId!),
+          future: controller
+              ?.getPoster(controller!.listCommentPostById[index].userId!),
           builder: (context, snapshot) {
             final user = snapshot.data;
-            return _buildItemComment(widget.listComment[index], user);
+            return _buildItemComment(
+                controller!.listCommentPostById[index], user);
           },
         );
       },
-      itemCount: widget.listComment.length,
+      itemCount: controller!.listCommentPostById.length,
     );
   }
 
   _buildItemComment(CommentModel commentModel, UserModel? user) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          user?.profileImageUrl != null || user?.profileImageUrl != ''
-              ? CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    user?.profileImageUrl ?? '',
-                  ),
-                )
-              : CircularProgressIndicator(
-                  color: splashColor,
+    return InkWell(
+      onLongPress: () {
+        if (controller?.auth.currentUser?.uid == commentModel.userId) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Xóa bình luận'),
+              content: Text('Bạn có chắc chắn muốn xóa bình luận này?'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Hủy'),
                 ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(Sizes.s16),
-                      color: greyAccent.withOpacity(0.2),
+                TextButton(
+                  onPressed: () {
+                    controller?.deleteCommentPostById(commentModel.id ?? '');
+                    controller?.getCommentPostById(widget.postId);
+
+                    Navigator.pop(context);
+                    Get.back();
+                  },
+                  child: Text('Xóa'),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            user?.profileImageUrl != null || user?.profileImageUrl != ''
+                ? CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      user?.profileImageUrl ?? '',
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.all(Sizes.s8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            user?.userName ?? '',
-                            style: pt16Bold(context),
-                          ),
-                          Text(
-                            commentModel.commentText ?? '',
-                            style: pt16Regular(context),
-                          ),
-                        ],
+                  )
+                : CircularProgressIndicator(
+                    color: splashColor,
+                  ),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(Sizes.s16),
+                        color: greyAccent.withOpacity(0.2),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(Sizes.s8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user?.userName ?? '',
+                              style: pt16Bold(context),
+                            ),
+                            Text(
+                              commentModel.commentText ?? '',
+                              style: pt16Regular(context),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  SpacingBox(h: 4),
-                  Text(
-                    timestampToDate(commentModel.timestamp).timeAgoEnShort(),
-                    style: pt12Regular(context).copyWith(color: greyAccent),
-                  )
-                ],
+                    SpacingBox(h: 4),
+                    Text(
+                      timestampToDate(commentModel.timestamp).timeAgoEnShort(),
+                      style: pt12Regular(context).copyWith(color: greyAccent),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
