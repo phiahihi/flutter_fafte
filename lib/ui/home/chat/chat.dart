@@ -179,6 +179,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       itemMessageModel?.userModel?.profileImageUrl ?? '',
                       width: Sizes.s50,
                       height: Sizes.s50,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 SpacingBox(

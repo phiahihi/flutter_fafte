@@ -191,47 +191,47 @@ class _WelcomeV2LoginScreenState extends State<WelcomeV2LoginScreen> {
                                   ),
                                 ),
                                 SpacingBox(h: 16),
-                                BuildTextLinearButton(
-                                  colors: [
-                                    yellowLightGradient,
-                                    yellowDarkGradient
-                                  ],
-                                  padding: EdgeInsets.zero,
-                                  onTap: () {
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-                                    AuthController.instance
-                                        .signInWithGoogle()
-                                        .then((response) {
-                                      if (response.success) {
-                                        setState(() {
-                                          isLoading = false;
-                                        });
-                                        navigateTo(const MainScreen(),
-                                            clearStack: true);
-                                      } else {
-                                        setState(() {
-                                          isLoading = false;
-                                        });
-                                        ContextExtensions(context)
-                                            .showSnackBar(response.message);
-                                      }
-                                    }).catchError((error) {
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                      ContextExtensions(context)
-                                          .showSnackBar(error);
-                                    });
-                                  },
-                                  text: 'Đăng nhập với Google',
-                                  style: pt16Regular(context).copyWith(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: Sizes.s18,
-                                    color: white,
-                                  ),
-                                ),
+                                // BuildTextLinearButton(
+                                //   colors: [
+                                //     yellowLightGradient,
+                                //     yellowDarkGradient
+                                //   ],
+                                //   padding: EdgeInsets.zero,
+                                //   onTap: () {
+                                //     setState(() {
+                                //       isLoading = true;
+                                //     });
+                                //     AuthController.instance
+                                //         .signInWithGoogle()
+                                //         .then((response) {
+                                //       if (response.success) {
+                                //         setState(() {
+                                //           isLoading = false;
+                                //         });
+                                //         navigateTo(const MainScreen(),
+                                //             clearStack: true);
+                                //       } else {
+                                //         setState(() {
+                                //           isLoading = false;
+                                //         });
+                                //         ContextExtensions(context)
+                                //             .showSnackBar(response.message);
+                                //       }
+                                //     }).catchError((error) {
+                                //       setState(() {
+                                //         isLoading = false;
+                                //       });
+                                //       ContextExtensions(context)
+                                //           .showSnackBar(error);
+                                //     });
+                                //   },
+                                //   text: 'Đăng nhập với Google',
+                                //   style: pt16Regular(context).copyWith(
+                                //     fontWeight: FontWeight.w500,
+                                //     fontSize: Sizes.s18,
+                                //     color: white,
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),

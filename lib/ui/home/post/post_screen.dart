@@ -10,6 +10,7 @@ import 'package:fafte/theme/assets.dart';
 import 'package:fafte/ui/home/personal/personal.dart';
 import 'package:fafte/ui/home/post/widget/comment_screen.dart';
 import 'package:fafte/ui/home/post/widget/detail_post_screen.dart';
+import 'package:fafte/ui/home/post/widget/edit_post_screen.dart';
 import 'package:fafte/ui/widget/container/spacing_box.dart';
 import 'package:fafte/ui/widget/skeleton/post_screen_skeleton.dart';
 import 'package:fafte/utils/date_time_utils.dart';
@@ -96,7 +97,7 @@ class _PostScreenState extends State<PostScreen> {
   }
 
   List<CommentModel>? getUserCommentPost(String postId) {
-    return _controller!.listCommentPostById
+    return _controller!.listCommentPost
         .where((element) => element.postId == postId)
         .toList();
   }
@@ -106,7 +107,7 @@ class _PostScreenState extends State<PostScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _controller?.getLikePost();
-
+      _controller?.getAllCommentPost();
       setState(() {});
     });
   }
@@ -119,6 +120,7 @@ class _PostScreenState extends State<PostScreen> {
     });
     await _controller?.getAllPost();
     await _controller?.getLikePost();
+    await _controller?.getAllCommentPost();
     setState(() {
       isLoading = true;
     });
@@ -230,7 +232,6 @@ class _PostScreenState extends State<PostScreen> {
       orElse: () => LikeModel(),
     );
     final listComment = getUserCommentPost(model.id!);
-    print('listComment: ${model.id}');
     return Container(
       color: white,
       child: ListView(
@@ -260,7 +261,73 @@ class _PostScreenState extends State<PostScreen> {
               timestampToDate(model.timeStamp).timeAgoEnShort(),
               style: pt12Regular(context),
             ),
-            trailing: Icon(Icons.more_vert),
+            trailing: IconButton(
+              icon: Icon(Icons.more_vert),
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Container(
+                      child: Wrap(
+                        children: [
+                          ListTile(
+                            leading: Icon(Icons.edit),
+                            title: Text(
+                              'Chỉnh sửa bài viết',
+                              style: pt16Regular(context),
+                            ),
+                            onTap: () {
+                              if (model.userId ==
+                                  _controller?.auth.currentUser?.uid) {
+                                navigateTo(
+                                  EditPostScreen(
+                                    postModel: model,
+                                  ),
+                                );
+                              } else {
+                                Navigator.pop(context);
+                                ContextExtensions(context).showSnackBar(
+                                    'Bạn không thể chỉnh sửa bài viết này');
+                              }
+                            },
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.delete),
+                            title: Text(
+                              'Xóa bài viết',
+                              style: pt16Regular(context),
+                            ),
+                            onTap: () {
+                              if (model.userId ==
+                                  _controller?.auth.currentUser?.uid) {
+                                _controller
+                                    ?.deletePost(model.id ?? '')
+                                    .then((response) async {
+                                  if (response.success) {
+                                    await _controller?.getAllPost();
+                                    await _controller?.getLikePost();
+                                    setState(() {});
+                                    Navigator.pop(context);
+                                  } else {
+                                    print(response.message);
+                                  }
+                                }).catchError((error) {
+                                  print(error);
+                                });
+                              } else {
+                                Navigator.pop(context);
+                                ContextExtensions(context).showSnackBar(
+                                    'Bạn không thể xóa bài viết này!');
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
             onTap: () {
               navigateTo(
                 DetailPostScreen(

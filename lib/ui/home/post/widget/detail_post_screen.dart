@@ -121,9 +121,7 @@ class _DetailPostScreenState extends State<DetailPostScreen> {
       (element) => element.userId == _controller?.auth.currentUser?.uid,
       orElse: () => LikeModel(),
     );
-    final listCommentPost = _controller?.listCommentPost
-        .where((element) => element.postId == widget.model.id)
-        .toList();
+    final listCommentPost = _controller?.listCommentPostById;
     return Scaffold(
       body: Stack(
         children: [
@@ -133,6 +131,7 @@ class _DetailPostScreenState extends State<DetailPostScreen> {
                 _buildAppBar(context),
                 Expanded(
                   child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
                     child: Column(
                       children: [
                         ListView(
@@ -329,9 +328,7 @@ class _DetailPostScreenState extends State<DetailPostScreen> {
                             ),
                           ],
                         ),
-                        ListView.separated(
-                          separatorBuilder: (context, index) =>
-                              SpacingBox(h: 8),
+                        ListView.builder(
                           shrinkWrap: true,
                           reverse: true,
                           physics: NeverScrollableScrollPhysics(),
@@ -383,12 +380,7 @@ class _DetailPostScreenState extends State<DetailPostScreen> {
                           setState(() {
                             isLoading = true;
                           });
-                          _controller?.listCommentPost.add(CommentModel(
-                            userId: _controller?.auth.currentUser?.uid,
-                            postId: widget.model.id,
-                            commentText: _commentController.text,
-                            timestamp: DateTime.now().millisecondsSinceEpoch,
-                          ));
+
                           _commentController.clear();
 
                           await _controller
@@ -397,6 +389,8 @@ class _DetailPostScreenState extends State<DetailPostScreen> {
                             if (response.success) {
                               setState(() {
                                 isLoading = false;
+                                _controller
+                                    ?.getCommentPostById(widget.model.id!);
                                 _controller?.getAllPostById(widget.model.id!);
                               });
                             } else {
@@ -430,56 +424,88 @@ class _DetailPostScreenState extends State<DetailPostScreen> {
   }
 
   _buildItemComment(CommentModel commentModel, UserModel? user) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          user?.backgroundImageUrl != null || user?.backgroundImageUrl != ''
-              ? CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    user?.profileImageUrl ?? '',
-                  ),
-                )
-              : CircleAvatar(),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(Sizes.s16),
-                      color: greyAccent.withOpacity(0.2),
+    return InkWell(
+      onLongPress: () {
+        if (_controller?.auth.currentUser?.uid == commentModel.userId) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Xóa bình luận'),
+              content: Text('Bạn có chắc chắn muốn xóa bình luận này?'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Hủy'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    _controller?.deleteCommentPostById(commentModel.id ?? '');
+                    _controller?.getCommentPostById(widget.model.id!);
+
+                    Navigator.pop(context);
+                  },
+                  child: Text('Xóa'),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+      child: Container(
+        color: Colors.white,
+        padding:
+            EdgeInsets.symmetric(horizontal: Sizes.s16, vertical: Sizes.s8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            user?.backgroundImageUrl != null || user?.backgroundImageUrl != ''
+                ? CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      user?.profileImageUrl ?? '',
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.all(Sizes.s8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            user?.userName ?? '',
-                            style: pt16Bold(context),
-                          ),
-                          Text(
-                            commentModel.commentText ?? '',
-                            style: pt16Regular(context),
-                          ),
-                        ],
+                  )
+                : CircleAvatar(),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: Sizes.s16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(Sizes.s16),
+                        color: greyAccent.withOpacity(0.2),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(Sizes.s8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user?.userName ?? '',
+                              style: pt16Bold(context),
+                            ),
+                            Text(
+                              commentModel.commentText ?? '',
+                              style: pt16Regular(context),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  SpacingBox(h: 4),
-                  Text(
-                    timestampToDate(commentModel.timestamp).timeAgoEnShort(),
-                    style: pt12Regular(context).copyWith(color: greyAccent),
-                  )
-                ],
+                    SpacingBox(h: 4),
+                    Text(
+                      timestampToDate(commentModel.timestamp).timeAgoEnShort(),
+                      style: pt12Regular(context).copyWith(color: greyAccent),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

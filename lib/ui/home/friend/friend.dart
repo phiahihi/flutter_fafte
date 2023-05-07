@@ -1,6 +1,7 @@
 import 'package:fafte/controller/friend_controller.dart';
+import 'package:fafte/ui/home/friend/widget/all_invite_screen.dart';
 import 'package:fafte/ui/home/friend/widget/search_user_screen.dart';
-import 'package:fafte/ui/widget/popup/show_sheet.dart';
+import 'package:fafte/ui/home/personal/personal.dart';
 import 'package:fafte/utils/snackbars_utils.dart';
 import 'package:fafte/models/friend.dart';
 import 'package:fafte/models/user.dart';
@@ -9,6 +10,8 @@ import 'package:fafte/ui/widget/skeleton/invite_skeleton.dart';
 import 'package:fafte/utils/date_time_utils.dart';
 import 'package:fafte/utils/export.dart';
 import 'package:provider/provider.dart';
+
+import 'widget/all_friend_screen.dart';
 
 class FriendScreen extends StatefulWidget {
   const FriendScreen({super.key});
@@ -27,6 +30,7 @@ class _FriendScreenState extends State<FriendScreen> {
     if (_controller == null) {
       _controller = Provider.of<FriendController>(context);
       _controller?.get10Invitation();
+      _controller?.getAllInvitation();
     }
   }
 
@@ -128,7 +132,9 @@ class _FriendScreenState extends State<FriendScreen> {
                             padding: EdgeInsets.zero,
                             backgroundColor: splashColor,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            navigateTo(AllFriendScreen());
+                          },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
@@ -156,7 +162,7 @@ class _FriendScreenState extends State<FriendScreen> {
                                     w: 4,
                                   ),
                                   Text(
-                                    '128',
+                                    '(${_controller?.listAllInvite.length ?? 0})',
                                     style: pt14Regular(context),
                                   )
                                 ],
@@ -174,7 +180,9 @@ class _FriendScreenState extends State<FriendScreen> {
                                   'Xem tất cả',
                                   style: pt14Regular(context),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  navigateTo(AllInviteScreen());
+                                },
                               )
                             ],
                           ),
@@ -230,7 +238,9 @@ class _FriendScreenState extends State<FriendScreen> {
 
   Widget _buildItemInvite(UserModel? friendModel, FriendModel invite) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        navigateTo(PersonalScreen(model: friendModel));
+      },
       child: Padding(
         padding:
             EdgeInsets.symmetric(vertical: Sizes.s8, horizontal: Sizes.s16),
@@ -359,5 +369,4 @@ class _FriendScreenState extends State<FriendScreen> {
       ),
     );
   }
-
 }

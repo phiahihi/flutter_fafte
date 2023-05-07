@@ -62,6 +62,9 @@ class _ChatScreenContentState extends State<ChatScreenContent> {
                     controller!.setUserNotTyping(widget.friend.id!);
                   });
                 },
+                messageListOptions: MessageListOptions(
+                  scrollPhysics: BouncingScrollPhysics(),
+                ),
                 messageOptions: MessageOptions(
                   containerColor: splashColor,
                   currentUserContainerColor: splashColor,
