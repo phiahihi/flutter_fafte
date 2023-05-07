@@ -12,6 +12,7 @@ import 'package:fafte/ui/home/post/widget/comment_screen.dart';
 import 'package:fafte/ui/home/post/widget/detail_post_screen.dart';
 import 'package:fafte/ui/home/post/widget/edit_post_screen.dart';
 import 'package:fafte/ui/widget/container/spacing_box.dart';
+import 'package:fafte/ui/widget/debouncer/debouncer.dart';
 import 'package:fafte/ui/widget/skeleton/post_screen_skeleton.dart';
 import 'package:fafte/utils/date_time_utils.dart';
 import 'package:fafte/utils/export.dart';
@@ -31,8 +32,8 @@ class _PostScreenState extends State<PostScreen> {
   bool isLoading = false;
   bool _isLikePressed = false;
   PostController? _controller;
-  NotificationController _notificationController =
-      NotificationController.instance;
+
+  final _debouncer = Debouncer(milliseconds: 500);
 
   @override
   void didChangeDependencies() {
@@ -49,24 +50,11 @@ class _PostScreenState extends State<PostScreen> {
     });
   }
 
-  void _likePost(PostModel post) async {
-    final user = await _controller?.getPoster(post.userId!);
-    _controller!.likePost(post.id!).then((response) async {
+  Future _likePost(PostModel post) async {
+    _controller!.likePost(post.id!).then((response) {
       if (response.success) {
-        _notificationController.sendNotification(
-          'Thích',
-          'Có người đã thích bài viết của bạn',
-          user?.fcmToken ?? '',
-        );
         setState(() {
-          _controller?.listLikePost.add(
-            LikeModel(
-              id: response.message,
-              userId: _controller?.auth.currentUser?.uid,
-              postId: post.id,
-              timestamp: DateTime.now().millisecondsSinceEpoch,
-            ),
-          );
+          _controller?.getLikePost();
         });
       }
     }).catchError((error) {
@@ -74,15 +62,11 @@ class _PostScreenState extends State<PostScreen> {
     });
   }
 
-  void _unLikePost(userLikePostId) async {
-    _controller!.unLikePost(userLikePostId).then((response) async {
+  Future _unLikePost(userLikePostId) async {
+    _controller!.unLikePost(userLikePostId).then((response) {
       if (response.success) {
         setState(() {
-          _controller?.listLikePost.removeWhere(
-            (element) =>
-                element.userId == _controller?.auth.currentUser?.uid &&
-                element.id == userLikePostId,
-          );
+          _controller?.getLikePost();
         });
       }
     }).catchError((error) {
@@ -419,24 +403,42 @@ class _PostScreenState extends State<PostScreen> {
                     children: [
                       Expanded(
                         child: InkWell(
-                          onTap: () async {
-                            if (!_isLikePressed) {
-                              // Thực hiện chức năng like
+                          onTap: () {
+                            _debouncer.run(() {
                               setState(() {
-                                _isLikePressed = true;
-
-                                isLiked == null ||
-                                        isLiked ||
-                                        _isLiked ||
-                                        userLikePost == null
-                                    ? _unLikePost(userLikePost?.id ?? '')
-                                    : _likePost(model);
+                                if (!_isLikePressed) {
+                                  // Thực hiện chức năng like
+                                  setState(() {
+                                    _isLikePressed = true;
+                                  });
+                                  setState(() {
+                                    isLiked == null ||
+                                            isLiked ||
+                                            _isLiked ||
+                                            userLikePost == null
+                                        ? _unLikePost(userLikePost?.id ?? '')
+                                            .then((value) {
+                                            // Move this code outside of the setState function call
+                                            // so that it is executed after the function completes
+                                            print('Unliked');
+                                          })
+                                        : _likePost(model).then((value) {
+                                            // Move this code outside of the setState function call
+                                            // so that it is executed after the function completes
+                                            print('Liked');
+                                          });
+                                  });
+                                  // Thiết lập thời gian chờ 1 giây
+                                  Future.delayed(Duration(seconds: 1), () {
+                                    setState(() {
+                                      _isLikePressed = false;
+                                    });
+                                  });
+                                } else {
+                                  print('Đang xử lý');
+                                }
                               });
-                              // Thiết lập thời gian chờ 1 giây
-                              Future.delayed(Duration(seconds: 1), () {
-                                _isLikePressed = false;
-                              });
-                            }
+                            });
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: Sizes.s8),

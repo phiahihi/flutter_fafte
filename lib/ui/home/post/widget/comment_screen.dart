@@ -217,8 +217,9 @@ class _CommentScreenState extends State<CommentScreen> {
                 TextButton(
                   onPressed: () {
                     controller?.deleteCommentPostById(commentModel.id ?? '');
-                    controller?.getCommentPostById(widget.postId);
 
+                    controller?.getCommentPostById(widget.postId);
+                    controller?.getAllCommentPost();
                     Navigator.pop(context);
                     Get.back();
                   },
