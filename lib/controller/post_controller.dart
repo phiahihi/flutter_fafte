@@ -212,6 +212,15 @@ class PostController extends ChangeNotifier {
   Future deleteCommentPostById(String id) async {
     try {
       await FirebaseFirestore.instance.collection('comments').doc(id).delete();
+      await FirebaseFirestore.instance
+          .collection('notifications')
+          .where('commentId', isEqualTo: id)
+          .get()
+          .then((value) {
+        value.docs.forEach((element) {
+          element.reference.delete();
+        });
+      });
     } catch (e) {
       print(e);
     }
@@ -247,6 +256,8 @@ class PostController extends ChangeNotifier {
 
   Future<BaseResponse> likePost(String postId) async {
     try {
+      final sender = await getPoster(auth.currentUser!.uid);
+
       final like = await FirebaseFirestore.instance
           .collection('likes')
           .add(<String, dynamic>{});
@@ -259,7 +270,27 @@ class PostController extends ChangeNotifier {
           .collection('likes')
           .doc(id)
           .set(likeModel.toJson());
+      final post = await getPost(postId);
+      final recipientId = await getPoster(post.userId!);
+      if (recipientId.id == auth.currentUser?.uid) {
+      } else {
+        await firestore.collection('notifications').add(<String, dynamic>{
+          'title': 'Có một lượt thích mới trên bài viết của bạn',
+          'body': '${sender.userName} đã thích bài viết của bạn',
+          'type': 'comment',
+          'postId': postId,
+          'senderId': auth.currentUser?.uid,
+          'likeId': id,
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'recipientId': recipientId.id,
+          'read': false,
+        });
 
+        await notificationController.sendNotification(
+            'Có một lượt thích mới trên bài viết của bạn',
+            '${sender.userName} đã thich bài viết của bạn',
+            recipientId.fcmToken!);
+      }
       return BaseResponse(
         message: id,
         success: true,
@@ -275,7 +306,15 @@ class PostController extends ChangeNotifier {
   Future<BaseResponse> unLikePost(String likeId) async {
     try {
       await FirebaseFirestore.instance.collection('likes').doc(likeId).delete();
-
+      await FirebaseFirestore.instance
+          .collection('notifications')
+          .where('likeId', isEqualTo: likeId)
+          .get()
+          .then((value) {
+        value.docs.forEach((element) {
+          element.reference.delete();
+        });
+      });
       return BaseResponse(
         message: 'Success',
         success: true,
@@ -335,6 +374,7 @@ class PostController extends ChangeNotifier {
           'type': 'comment',
           'postId': postId,
           'senderId': auth.currentUser?.uid,
+          'commentId': id,
           'timestamp': DateTime.now().millisecondsSinceEpoch,
           'recipientId': recipientId.id,
           'read': false,

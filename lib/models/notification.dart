@@ -8,18 +8,21 @@ class NotificationModel {
   final String? senderId;
   final String? type;
   final String? postId;
+  final String? commentId;
+  final String? likeId;
 
-  NotificationModel({
-    this.id,
-    this.title,
-    this.body,
-    this.timestamp,
-    this.read,
-    this.recipientId,
-    this.senderId,
-    this.type,
-    this.postId,
-  });
+  NotificationModel(
+      {this.id,
+      this.title,
+      this.body,
+      this.timestamp,
+      this.read,
+      this.recipientId,
+      this.senderId,
+      this.type,
+      this.postId,
+      this.commentId,
+      this.likeId});
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
@@ -32,6 +35,8 @@ class NotificationModel {
       senderId: json['senderId'],
       type: json['type'],
       postId: json['postId'],
+      commentId: json['commentId'] ?? '',
+      likeId: json['likeId'] ?? '',
     );
   }
 
