@@ -17,19 +17,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
   NotificationController? _notificationController;
   final _postController = PostController.instance;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_notificationController == null) {
-      // isLoading = false;
-      _notificationController = Provider.of<NotificationController>(context);
-      _notificationController?.getAllNotification();
-      setState(() {});
-    }
-    setState(() {
-      // isLoading = true;
-    });
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   if (_notificationController == null) {
+  //     // isLoading = false;
+  //     _notificationController = Provider.of<NotificationController>(context);
+  //     _notificationController?.getAllNotification();
+  //     setState(() {});
+  //   }
+  //   setState(() {
+  //     // isLoading = true;
+  //   });
+  // }
 
   Future<void> _detailPost(NotificationModel notificationModel) async {
     final post = await _postController.getPost(notificationModel.postId!);
@@ -52,6 +52,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       ),
       body: SafeArea(
         child: ListView.builder(
+          physics: const BouncingScrollPhysics(),
           itemCount: _notificationController?.listNotificationModel.length,
           itemBuilder: (context, index) {
             final notification =

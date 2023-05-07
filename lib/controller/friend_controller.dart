@@ -21,6 +21,7 @@ class FriendController extends ChangeNotifier {
   List<FriendModel> list10Invite = [];
   List<UserModel>? list10Friend;
 
+  List<FriendModel> listAllInvite = [];
   List<FriendModel> listAllFriend = [];
 
   Future<FriendModel> getInvitation(String userId) async {
@@ -99,8 +100,36 @@ class FriendController extends ChangeNotifier {
           .where('status', isEqualTo: 'pending')
           .get();
 
-      listAllFriend =
+      listAllInvite =
           invitation.docs.map((e) => FriendModel.fromJson(e.data())).toList();
+      print(listAllInvite[0].toJson());
+      notifyListeners();
+
+      return BaseResponse(
+        message: 'Success',
+        success: true,
+      );
+    } catch (error) {
+      return BaseResponse(
+        message: error.toString(),
+        success: false,
+      );
+    }
+  }
+
+  Future<BaseResponse> getAllFriend() async {
+    try {
+      final currentUser = auth.currentUser;
+      final friend = await firestore
+          .collection('invitations')
+          .where('status', isEqualTo: 'accepted')
+          .get();
+
+      listAllFriend =
+          friend.docs.map((e) => FriendModel.fromJson(e.data())).toList();
+
+      notifyListeners();
+
       return BaseResponse(
         message: 'Success',
         success: true,
@@ -116,14 +145,14 @@ class FriendController extends ChangeNotifier {
   Future<BaseResponse> sendInvitation(String receiverId) async {
     try {
       await getAllInvitation();
-      if (listAllFriend.any((element) =>
+      if (listAllInvite.any((element) =>
           element.receiverId == receiverId ||
           element.receiverId == auth.currentUser!.uid &&
               element.senderId == auth.currentUser?.uid ||
           element.senderId == receiverId)) {
         return BaseResponse(
           message: 'Không thể gửi lời mời kết bạn',
-          success: true,
+          success: false,
         );
       } else {
         final currentUser = auth.currentUser;

@@ -37,6 +37,7 @@ class _MainScreenState extends State<MainScreen> {
       }
       if (index == 1) {
         FriendController.instance.get10Invitation();
+        FriendController.instance.getAllInvitation();
       }
       if (index == 2) {
         ChatController.instance.getAllBoxChat();
@@ -55,6 +56,7 @@ class _MainScreenState extends State<MainScreen> {
     super.didChangeDependencies();
     if (userController == null) {
       UserController.instance.getUser();
+      NotificationController.instance.getAllNotification();
     }
   }
 
@@ -101,10 +103,7 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
               icon: Badge(
                 label: Text(
-                  notificationController.listNotificationModel
-                      .where((element) => element.read == false)
-                      .toList()
-                      .length
+                  notificationController.listNotificationModel.length
                       .toString(),
                   style: pt12Regular(context).copyWith(color: white),
                 ),
@@ -112,10 +111,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
               activeIcon: Badge(
                 label: Text(
-                  notificationController.listNotificationModel
-                      .where((element) => element.read == false)
-                      .toList()
-                      .length
+                  notificationController.listNotificationModel.length
                       .toString(),
                   style: pt12Regular(context).copyWith(color: white),
                 ),

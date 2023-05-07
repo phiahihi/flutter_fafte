@@ -140,6 +140,8 @@ class _PersonalScreenState extends State<PersonalScreen> {
       });
       _controller = Provider.of<PostController>(context);
       _controller!.getAllPostById(widget.model?.id ?? userModel.userModel!.id!);
+      _controller!.getLikePost();
+      _controller!.getAllCommentPost();
     }
     setState(() {
       isLoading = true;
@@ -299,7 +301,29 @@ class _PersonalScreenState extends State<PersonalScreen> {
                     ),
                     Expanded(
                       child: BuildTextLinearButton(
-                        onTap: _rejectInvitation,
+                        onTap: () async {
+                          if (!isLoadingInvite) {
+                            setState(() {
+                              isLoadingInvite = true;
+                            });
+                            await _rejectInvitation();
+                            await _friendController
+                                .getStatusInvite(widget.model?.id ??
+                                    userModel.userModel!.id!)
+                                .then((value) {
+                              setState(() {
+                                _status = value.status;
+                                _receiverId = value.receiverId;
+                                _inviteId = value.id;
+
+                                print(value.toJson());
+                              });
+                            });
+                            setState(() {
+                              isLoadingInvite = false;
+                            });
+                          }
+                        },
                         text: 'Từ chối',
                         borderRadius: BorderRadius.circular(Sizes.s8),
                         height: Sizes.s40,
@@ -594,8 +618,8 @@ class _PersonalScreenState extends State<PersonalScreen> {
             onTap: () {
               navigateTo(
                 DetailPostScreen(
-                  model: model,
                   userModel: userModel,
+                  model: model,
                 ),
               );
             },

@@ -136,6 +136,8 @@ class _CommentScreenState extends State<CommentScreen> {
 
                                       controller
                                           ?.getCommentPostById(widget.postId);
+                                      controller!.getLikePost();
+                                      controller!.getAllCommentPost();
                                       setState(() {
                                         isLoading = false;
                                       });

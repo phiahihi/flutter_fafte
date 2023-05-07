@@ -93,6 +93,76 @@ class PostController extends ChangeNotifier {
     }
   }
 
+  Future<BaseResponse> updatePostId(String postId) async {
+    try {
+      var urlImage;
+      if (pickedImage != null) {
+        urlImage = await _uploadImage(File(pickedImage!.path));
+      } else {
+        urlImage = postModel.postImageUrl;
+      }
+
+      postModel.postImageUrl = urlImage;
+      postModel.id = postId;
+      postModel.userId = auth.currentUser?.uid;
+      postModel.timeStamp = DateTime.now().millisecondsSinceEpoch;
+      postModel.postText = postText;
+      await updatePost(postModel.id!, postModel.toJson());
+
+      return BaseResponse(
+        message: 'Success',
+        success: true,
+      );
+    } catch (error) {
+      return BaseResponse(
+        message: error.toString(),
+        success: false,
+      );
+    }
+  }
+
+  Future<BaseResponse> deletePost(String postId) async {
+    try {
+      await firestore
+          .collection('comments')
+          .where('postId', isEqualTo: postId)
+          .get()
+          .then((value) {
+        value.docs.forEach((element) {
+          element.reference.delete();
+        });
+      });
+      await firestore
+          .collection('notifications')
+          .where('postId', isEqualTo: postId)
+          .get()
+          .then((value) {
+        value.docs.forEach((element) {
+          element.reference.delete();
+        });
+      });
+      await firestore
+          .collection('likes')
+          .where('postId', isEqualTo: postId)
+          .get()
+          .then((value) {
+        value.docs.forEach((element) {
+          element.reference.delete();
+        });
+      });
+      await firestore.collection('posts').doc(postId).delete();
+      return BaseResponse(
+        message: 'Success',
+        success: true,
+      );
+    } catch (error) {
+      return BaseResponse(
+        message: error.toString(),
+        success: false,
+      );
+    }
+  }
+
   Future<BaseResponse> getAllPost() async {
     try {
       final posts = await firestore
@@ -159,6 +229,17 @@ class PostController extends ChangeNotifier {
   Future<void> createPost(String id, Map<String, dynamic> data) async {
     try {
       await FirebaseFirestore.instance.collection('posts').doc(id).set(data);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> updatePost(String postId, Map<String, dynamic> data) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('posts')
+          .doc(postId)
+          .update(data);
     } catch (e) {
       print(e);
     }
